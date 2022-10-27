@@ -28,18 +28,18 @@ public class ReubensWildRide extends LinearOpMode {
     private DcMotor motorbackRight;
 
     //Declare Mechanism Motors
-    //private DcMotor ArmMotor;
-    //private DcMotor CarouselMotor;
-    //private DcMotor IntakeMotor;
-    //private DcMotor TotemArm;
+    //private DcMotor leftSlide;
+    //private DcMotor rightSlide;
 
-    //Declare Servos
-    //private Servo GrabberServo;
-    //private CRServo leftEye;
-    //private CRServo rightEye;
-    //private CRServo leftTusk;
-    //private CRServo rightTusk;
-    //time variable
+    //Declare CR Servos
+    //private CRServo leftIntake;
+    //private CRServo rightIntake;
+
+    //Declare Regular Servos
+    //private Servo leftForebar;
+    //private Servo rightForebar;
+
+    //Time Variable
     private ElapsedTime runtime = new ElapsedTime();
 
     //motor speed variables
@@ -50,7 +50,7 @@ public class ReubensWildRide extends LinearOpMode {
     //double TL;
     //double TR;
     //POWER
-    double pwr = 3/4;
+    double pwr = 3;
 
     //Joystick position variables
     double X1;
@@ -69,37 +69,33 @@ public class ReubensWildRide extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        // Initialize drive motors
+        // Initialize Drive Motors
         motorfrontLeft = hardwareMap.dcMotor.get("motorfrontLeft");
         motorfrontRight = hardwareMap.dcMotor.get("motorfrontRight");
         motorbackLeft = hardwareMap.dcMotor.get("motorbackLeft");
         motorbackRight = hardwareMap.dcMotor.get("motorbackRight");
 
-        //Initialize other motors
-        //ArmMotor = hardwareMap.dcMotor.get("ArmMotor");
-        //CarouselMotor = hardwareMap.dcMotor.get("CarouselMotor");
-        //IntakeMotor = hardwareMap.dcMotor.get("IntakeMotor");
-        //TotemArm = hardwareMap.dcMotor.get("TotemArm");
+        //Initialize Mechanism Motors
+        /*leftSlide = hardwareMap.dcMotor.get("leftSlide");
+        rightSlide = hardwareMap.dcMotor.get("rightSlide");
 
-        //Initialize servos
-        //GrabberServo = hardwareMap.servo.get("GrabberServo");
-        //leftEye = hardwareMap.crservo.get("leftEye");
-        //rightEye = hardwareMap.crservo.get("rightEye");
-        //leftTusk = hardwareMap.crservo.get("leftTusk");
-        //rightTusk = hardwareMap.crservo.get("rightTusk");
+        //Initialize CR (Continuous Rotation) Servos
+        leftIntake = hardwareMap.crservo.get("leftIntake");
+        rightIntake = hardwareMap.crservo.get("rightIntake");
 
-        //Initialize drive motors' direction
-        //DONT CHANGE THIS CONFIRGURATION
+        //Initialize Regular Servos
+        leftForebar = hardwareMap.crservo.get("leftForebar");
+        rightForebar = hardwareMap.crservo.get("rightForebar");*/
+
+        //Initialize Drive Motors' Directions
         motorfrontLeft.setDirection(DcMotor.Direction.FORWARD);
         motorfrontRight.setDirection(DcMotor.Direction.REVERSE);
         motorbackLeft.setDirection(DcMotor.Direction.FORWARD);
         motorbackRight.setDirection(DcMotor.Direction.REVERSE);
 
-        //Initialize other motors' directions
-        //ArmMotor.setDirection(DcMotor.Direction.FORWARD);
-        //CarouselMotor.setDirection(DcMotor.Direction.REVERSE);
-        //IntakeMotor.setDirection(DcMotor.Direction.FORWARD);
-        //TotemArm.setDirection(DcMotor.Direction.FORWARD);
+        //Initialize Mechanism Motors' Directions
+        //leftSlide.setDirection(DcMotor.Direction.FORWARD);
+        //rightSlide.setDirection(DcMotor.Direction.FORWARD);
 
         //Wait to start code
         waitForStart();
@@ -114,14 +110,12 @@ public class ReubensWildRide extends LinearOpMode {
             RF = 0;
             LB = 0;
             RB = 0;
-            /*D1 = 0;
-            D2 = 0;*/
 
             //get joystick values
-             Y1 = Math.pow((double) gamepad1.right_stick_y * joyScale, pwr);
-             X1 = Math.pow((double) gamepad1.right_stick_x * joyScale, pwr);
-             Y2 = Math.pow((double) gamepad1.left_stick_y * joyScale, pwr);
-             X2 = Math.pow((double) gamepad1.left_stick_x * joyScale, pwr);
+             Y1 = .666*(Math.pow(gamepad1.right_stick_y * joyScale, pwr));
+             X1 = .666*(Math.pow(gamepad1.right_stick_x * joyScale, pwr));
+             Y2 = .666*(Math.pow(gamepad1.left_stick_y * joyScale, pwr));
+             X2 = .666*(Math.pow(gamepad1.left_stick_x * joyScale, pwr));
 
 
             telemetry.addLine(String.valueOf(gamepad1.right_stick_y));
@@ -178,11 +172,11 @@ public class ReubensWildRide extends LinearOpMode {
             RB -=  X2;
 
             //Turning
-            //turn right analog is imperfect
-            LF -= 0.75*X1;
-            RF += 0.75*X1;
-            LB -= 0.75*X1;
-            RB += 0.75*X1;
+            LF -= X1;
+            RF += X1;
+            LB -= X1;
+            RB += X1;
+
             //Wheel power limiter
             /*LF = Math.max(-motorMax, Math.min(LF, motorMax));
             RF = Math.max(-motorMax, Math.min(RF, motorMax));
@@ -190,115 +184,11 @@ public class ReubensWildRide extends LinearOpMode {
             RB = Math.max(-motorMax, Math.min(RB, motorMax));*/
 
 
-            //set motors
+            //Set Motors
             motorfrontLeft.setPower(LF);
             motorfrontRight.setPower(RF);
             motorbackLeft.setPower(LB);
             motorbackRight.setPower(RB);
-
-            //Carousel Motor Code
-            /*if(gamepad2.x){
-                CarouselMotor.setPower(1);
-            }
-            else if(gamepad2.b){
-                CarouselMotor.setPower(-1);
-            }
-            else{
-                CarouselMotor.setPower(0);
-            }
-
-            if(gamepad2.left_stick_y > 0)
-            {
-                ArmMotor.setPower(0.5);
-            }
-            else if(gamepad2.left_stick_y < 0){
-                ArmMotor.setPower(-1);
-            }
-            else{
-                ArmMotor.setPower(0);
-            }
-
-            //Intake
-            if(gamepad2.right_stick_y > 0){
-                IntakeMotor.setPower(-0.75);
-            }
-            //Outtake
-            else if (gamepad2.right_stick_y < 0){
-                IntakeMotor.setPower(0.75);
-            }
-            else{
-                IntakeMotor.setPower(0);
-            }
-
-            //Left Eye Forward
-            if (gamepad2.left_trigger > 0.2) {
-                leftEye.setPower(1);
-            }
-            //Left Eye Backward
-            else if (gamepad2.left_bumper) {
-                leftEye.setPower(-1);
-            }
-            else {
-                leftEye.setPower(0);
-            }
-
-            //Right Eye Forward
-            if (gamepad2.right_trigger > 0.2) {
-                rightEye.setPower(-1);
-            }
-            //Right Eye Backward
-            else if (gamepad2.right_bumper) {
-                rightEye.setPower(1);
-            }
-            else {
-                rightEye.setPower(0);
-            }
-
-            if (gamepad2.dpad_up){
-                leftTusk.setPower(1);
-            }
-            else if (gamepad2.dpad_down){
-                leftTusk.setPower(-1);
-            }
-            else {
-                leftTusk.setPower(0);
-            }
-
-            if (gamepad2.dpad_right){
-                rightTusk.setPower(1);
-            }
-            else if (gamepad2.dpad_left){
-                rightTusk.setPower(-1);
-            }
-            else {
-                rightTusk.setPower(0);
-            }*/
-
-
-            //Totem Arm Code
-            /*if (gamepad2.dpad_down) {
-                TotemArm.setPower(-1);
-            }
-            else if (gamepad2.dpad_up) {
-                TotemArm.setPower(1);
-            }
-            else {
-                TotemArm.setPower(0);
-            }
-
-            //Grabber Servo Code
-            else if (gamepad2.dpad_right) {
-                GrabberServo.setPosition(0.8);
-            }
-            else {
-                GrabberServo.setPosition(0.4);
-            }*/
-
-            /*while (opModeIsActive()) {
-                if (limiter.getState() == true) {
-                    WobbleGoalMotor.setPower(0);
-                }
-            }*/
         }
     }
 }
