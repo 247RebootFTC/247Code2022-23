@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import java.util.*;
 import java.lang.*;
 
@@ -92,6 +94,11 @@ public class ReubensWildRide extends LinearOpMode {
         motorfrontRight.setDirection(DcMotor.Direction.REVERSE);
         motorbackLeft.setDirection(DcMotor.Direction.FORWARD);
         motorbackRight.setDirection(DcMotor.Direction.REVERSE);
+
+        //Voltage Sensor
+        /*VoltageSensor voltSensor = hardwareMap.voltageSensor.get("Motor Controller 1");
+        telemetry.addLine(String.valueOf(voltSensor.getVoltage()));
+        telemetry.update();*/
 
         //Initialize Mechanism Motors' Directions
         //leftSlide.setDirection(DcMotor.Direction.FORWARD);
