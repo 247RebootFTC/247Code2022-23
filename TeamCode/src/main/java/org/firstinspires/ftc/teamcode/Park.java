@@ -55,7 +55,8 @@ import com.qualcomm.robotcore.util.Range;
  * is explained below.
  */
 
-@Autonomous(name = "Park", group = "Red Autonomi")
+@Disabled
+@Autonomous(name = "Park")
 
 public class Park extends LinearOpMode {
 
@@ -90,7 +91,7 @@ public class Park extends LinearOpMode {
 
     //Declare servos
 
-    //the time Object
+    //The Time Object
     private ElapsedTime runtime=new ElapsedTime();
     String Label = "";
 

@@ -22,6 +22,7 @@ public class ReubensWildRide extends LinearOpMode {
 
     //This is where we set all of our variables so we can call them in future code
     double tgtPower = 0;
+    int armPosition = 0;
 
     //declare Drive Motors
     private DcMotor motorfrontLeft;
@@ -30,16 +31,16 @@ public class ReubensWildRide extends LinearOpMode {
     private DcMotor motorbackRight;
 
     //Declare Mechanism Motors
-    //private DcMotor leftSlide;
-    //private DcMotor rightSlide;
+    private DcMotor leftSlide;
+    private DcMotor rightSlide;
 
     //Declare CR Servos
-    //private CRServo leftIntake;
-    //private CRServo rightIntake;
+    private CRServo leftIntake;
+    private CRServo rightIntake;
 
     //Declare Regular Servos
-    //private Servo leftForebar;
-    //private Servo rightForebar;
+    private Servo leftForebar;
+    private Servo rightForebar;
 
     //Time Variable
     private ElapsedTime runtime = new ElapsedTime();
@@ -197,5 +198,108 @@ public class ReubensWildRide extends LinearOpMode {
             motorbackLeft.setPower(LB);
             motorbackRight.setPower(RB);
         }
+        if(gamepad2.a) {
+            leftIntake.setPower(1);
+            rightIntake.setPower(1);
+        }
+        else if(gamepad2.y) {
+            leftIntake.setPower(-1);
+            rightIntake.setPower(-1);
+        }
+        else{
+            leftIntake.setPower(0);
+            rightIntake.setPower(0);
+        }
+        if(gamepad2.left_stick_y < 0.0) {
+            leftSlide.setPower(1);
+            rightSlide.setPower(1);
+        }
+        else if(gamepad2.left_stick_y > 0.0) {
+            leftSlide.setPower(-1);
+            rightSlide.setPower(-1);
+        }
+        else {
+            leftSlide.setPower(0);
+            rightSlide.setPower(0);
+        }
+        if(gamepad2.x) {
+            leftForebar.setPosition(0.0);
+            rightForebar.setPosition(0.0);
+        }
+        if(gamepad2.b) {
+            leftForebar.setPosition(0.5);
+            rightForebar.setPosition(0.5);
+        }
+
+        /*if(gamepad1.y) {
+            VoltageSensor voltSensor = hardwareMap.voltageSensor.get("Motor Controller 1");
+            double voltage = 15/voltSensor.getVoltage();
+            if(armPosition==0) {
+                //armUp(voltage*0.75);
+            }
+            else if(armPosition==1) {
+                //armUp(voltage*0.5);
+            }
+            if(armPosition==2) {
+                //armUp(voltage*0.25);
+            }
+            armPosition = 3;
+        }
+        if(gamepad1.b) {
+            VoltageSensor voltSensor = hardwareMap.voltageSensor.get("Motor Controller 1");
+            double voltage = 15/voltSensor.getVoltage();
+            if(armPosition==0) {
+                //armUp(voltage*0.5);
+            }
+            else if(armPosition==1) {
+                //armUp(voltage*0.25);
+            }
+            if(armPosition==3) {
+                //armDown(voltage*0.25);
+            }
+            armPosition = 2;
+        }
+        if(gamepad1.a) {
+            VoltageSensor voltSensor = hardwareMap.voltageSensor.get("Motor Controller 1");
+            double voltage = 15/voltSensor.getVoltage();
+            if(armPosition==0) {
+                //armUp(voltage*0.25);
+            }
+            else if(armPosition==2) {
+                //armDown(voltage*0.25);
+            }
+            if(armPosition==3) {
+                //armDown(voltage*0.5);
+            }
+            armPosition = 1;
+        }
+        if(gamepad1.x) {
+            VoltageSensor voltSensor = hardwareMap.voltageSensor.get("Motor Controller 1");
+            double voltage = 15/voltSensor.getVoltage();
+            if(armPosition==1) {
+                //armDown(voltage*0.25);
+            }
+            else if(armPosition==2) {
+                //armDown(voltage*0.5);
+            }
+            if(armPosition==3) {
+                //armDown(voltage*0.75);
+            }
+            armPosition = 0;
+        }*/
     }
+    /*public void armUp(double time) {
+        double run=(runtime.time()+time);
+        while(runtime.time()<run){
+            leftSlide.setPower(1);
+            rightSlide.setPower(1);
+        }
+    }
+    public void armDown(double time) {
+        double run=(runtime.time()+time);
+        while(runtime.time()<run){
+            leftSlide.setPower(-1);
+            rightSlide.setPower(-1);
+        }
+    }*/
 }
