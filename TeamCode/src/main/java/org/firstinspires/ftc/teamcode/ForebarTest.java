@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import static com.qualcomm.robotcore.hardware.Servo.MAX_POSITION;
+import static com.qualcomm.robotcore.hardware.Servo.MIN_POSITION;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -18,8 +21,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 //import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-@TeleOp (name="Reuben's Wild Ride")
-public class ReubensWildRide extends LinearOpMode {
+@Disabled
+@TeleOp
+public class ForebarTest extends LinearOpMode {
 
     //This is where we set all of our variables so we can call them in future code
     double tgtPower = 0;
@@ -30,14 +34,6 @@ public class ReubensWildRide extends LinearOpMode {
     private DcMotor motorfrontRight;
     private DcMotor motorbackLeft;
     private DcMotor motorbackRight;
-
-    //Declare Mechanism Motors
-    private DcMotor leftSlide;
-    private DcMotor rightSlide;
-
-    //Declare CR Servos
-    private CRServo leftIntake;
-    private CRServo rightIntake;
 
     //Declare Regular Servos
     private Servo leftForebar;
@@ -85,32 +81,22 @@ public class ReubensWildRide extends LinearOpMode {
         motorbackLeft = hardwareMap.dcMotor.get("motorbackLeft");
         motorbackRight = hardwareMap.dcMotor.get("motorbackRight");
 
-        //Initialize Mechanism Motors
-        leftSlide = hardwareMap.dcMotor.get("leftSlide");
-        rightSlide = hardwareMap.dcMotor.get("rightSlide");
-
-        //Initialize CR (Continuous Rotation) Servos
-        leftIntake = hardwareMap.crservo.get("leftIntake");
-        rightIntake = hardwareMap.crservo.get("rightIntake");
-
         //Initialize Regular Servos
         leftForebar = hardwareMap.servo.get("leftForebar");
         rightForebar = hardwareMap.servo.get("rightForebar");
 
         //Initialize Drive Motors' Directions
-        motorfrontLeft.setDirection(DcMotor.Direction.REVERSE);
-        motorfrontRight.setDirection(DcMotor.Direction.FORWARD);
-        motorbackLeft.setDirection(DcMotor.Direction.REVERSE);
-        motorbackRight.setDirection(DcMotor.Direction.FORWARD);
+        motorfrontLeft.setDirection(DcMotor.Direction.FORWARD);
+        motorfrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorbackLeft.setDirection(DcMotor.Direction.FORWARD);
+        motorbackRight.setDirection(DcMotor.Direction.REVERSE);
 
         //Voltage Sensor
         /*VoltageSensor voltSensor = hardwareMap.voltageSensor.get("Motor Controller 1");
         telemetry.addLine(String.valueOf(voltSensor.getVoltage()));
         telemetry.update();*/
 
-        //Initialize Mechanism Motors' Directions
-        leftSlide.setDirection(DcMotor.Direction.REVERSE);
-        rightSlide.setDirection(DcMotor.Direction.REVERSE);
+        //Initialize Mechanism Motors' Direction
 
         //Initialize Servos' Directions
         leftForebar.setDirection(Servo.Direction.REVERSE);
@@ -129,6 +115,15 @@ public class ReubensWildRide extends LinearOpMode {
                 pos = 1;
             }
 
+            telemetry.addLine(String.valueOf(leftForebar.getPosition()));
+            telemetry.addLine(String.valueOf(rightForebar.getPosition()));
+            telemetry.addLine(String.valueOf(leftForebar.getPosition()));
+            telemetry.addLine(String.valueOf(rightForebar.getPosition()));
+            telemetry.addLine(String.valueOf(MAX_POSITION));
+            telemetry.addLine(String.valueOf(MIN_POSITION));
+            telemetry.update();
+            //all the drive code
+
             //reset speed variables
             LF = 0;
             RF = 0;
@@ -142,7 +137,6 @@ public class ReubensWildRide extends LinearOpMode {
             iX1 = 0.5 * (Math.pow(gamepad1.right_stick_x * joyScale, pwr));
             iY2 = 0.85 * (Math.pow(gamepad1.left_stick_y * joyScale, pwr));
             iX2 = 0.666 * (Math.pow(gamepad1.left_stick_x * joyScale, pwr));
-
             if (faxmachine) {
                 iY1 = gamepad1.right_stick_y * joyScale;
                 iX1 = gamepad1.right_stick_x * joyScale;
@@ -228,40 +222,18 @@ public class ReubensWildRide extends LinearOpMode {
             motorbackLeft.setPower(LB);
             motorbackRight.setPower(RB);
 
-            if(gamepad2.right_bumper) {
-                leftIntake.setPower(-1);
-                rightIntake.setPower(1);
-            }
-            else if(gamepad2.left_bumper) {
-                leftIntake.setPower(1);
-                rightIntake.setPower(-1);
-            }
-            else if(gamepad2.right_trigger > 0.2) {
-                leftIntake.setPower(0);
-                rightIntake.setPower(0);
-            }
-
-            else if(gamepad2.left_trigger > 0.2) {
-                leftIntake.setPower(0);
-                rightIntake.setPower(0);
-            }
-
-            if (gamepad2.left_stick_y < 0.0) {
-                leftSlide.setPower(1);
-                rightSlide.setPower(1);
-            }
-            else if (gamepad2.left_stick_y > 0.0) {
-                leftSlide.setPower(-1);
-                rightSlide.setPower(-1);
-            }
-            else {
-                leftSlide.setPower(0);
-                rightSlide.setPower(0);
-            }
             if (gamepad2.x) {
                 leftForebar.setPosition(0.25);
                 rightForebar.setPosition(0.25);
             }
+            /*else if (gamepad2.dpad_up) {
+                leftForebar.setPosition(1.0);
+                rightForebar.setPosition(1);
+            }
+            else if (gamepad2.y) {
+                leftForebar.setPosition(0.5);
+                rightForebar.setPosition(0.5);
+            }*/
             else if (gamepad2.b) {
                 leftForebar.setPosition(1.0);
                 rightForebar.setPosition(1.0);

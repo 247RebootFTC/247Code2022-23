@@ -62,7 +62,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
  * is explained below.
  */
 @Autonomous(name = "Test", group = "Blue Autonomi")
-//@Disabled
+@Disabled
 public class Test extends LinearOpMode {
 
     /* Encoder Specific defines */

@@ -52,6 +52,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * 100% accurate) method of detecting the skystone when lined up with
  * the sample regions over the first 3 stones.
  */
+@Disabled
 @Autonomous
 public class Colors extends LinearOpMode
 {
