@@ -145,7 +145,7 @@ public class SensePark extends LinearOpMode {
 
         waitForStart();
 
-        String color = pipeline.getAnalysis();
+        String color;
 
         if (opModeIsActive()) {
 
@@ -166,18 +166,22 @@ public class SensePark extends LinearOpMode {
             telemetry.addData("Cr Value:", pipeline.getCr());
             telemetry.update();
 
+            moveForward(1.0);
+
+            color = pipeline.getAnalysis();
+
+            telemetry.addData("Analysis", color);
+            telemetry.update();
+
             if(color=="GREEN") {
-                strafeLeft(0.91);
+                strafeLeft(1.1);
                 stop(1.0);
-                moveForward(0.24);
             }
             else if(color=="PINK") {
-                moveForward(0.17);
             }
             else if(color=="ORANGE") {
-                strafeRight(1.1);
+                strafeRight(1.15);
                 stop(1.0);
-                moveForward(0.24);
             }
 
             // Don't burn CPU cycles busy-looping in this sample
@@ -232,20 +236,20 @@ public class SensePark extends LinearOpMode {
     public void strafeLeft(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(-0.5);
-            motorfrontRight.setPower(0.5);
-            motorbackLeft.setPower(0.5);
-            motorbackRight.setPower(-0.5);
+            motorfrontLeft.setPower(0.5);
+            motorfrontRight.setPower(-0.5);
+            motorbackLeft.setPower(-0.5);
+            motorbackRight.setPower(0.5);
         }
     }
 
     public void strafeRight(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(0.5);
-            motorfrontRight.setPower(-0.5);
-            motorbackLeft.setPower(-0.5);
-            motorbackRight.setPower(0.5);
+            motorfrontLeft.setPower(-0.5);
+            motorfrontRight.setPower(0.5);
+            motorbackLeft.setPower(0.5);
+            motorbackRight.setPower(-0.5);
         }
     }
 
