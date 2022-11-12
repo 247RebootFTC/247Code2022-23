@@ -136,15 +136,15 @@ public class ReubensWildRide extends LinearOpMode {
             RF = 0;
             LB = 0;
             RB = 0;
-            /*
-            if (gamepad1.right_bumper) {
+
+            if (gamepad1.right_trigger > 0.5) {
                 faxmachine = !faxmachine;
             }
-            */
-            iY1 = 0.4 * (Math.pow(gamepad1.right_stick_y * joyScale, pwr));
-            iX1 = 0.4 * (Math.pow(gamepad1.right_stick_x * joyScale, pwr));
-            iY2 = 0.4 * (Math.pow(gamepad1.left_stick_y * joyScale, pwr));
-            iX2 = 0.4 * (Math.pow(gamepad1.left_stick_x * joyScale, pwr));
+
+            iY1 = 0.7 * (Math.pow(gamepad1.right_stick_y * joyScale, pwr));
+            iX1 = 0.7 * (Math.pow(gamepad1.right_stick_x * joyScale, pwr));
+            iY2 = 0.7 * (Math.pow(gamepad1.left_stick_y * joyScale, pwr));
+            iX2 = 0.7 * (Math.pow(gamepad1.left_stick_x * joyScale, pwr));
 
             if (faxmachine) {
                 iY1 = gamepad1.right_stick_y * joyScale;
@@ -152,6 +152,7 @@ public class ReubensWildRide extends LinearOpMode {
                 iY2 = gamepad1.left_stick_y * joyScale;
                 iX2 = gamepad1.left_stick_x * joyScale;
             }
+
             //get joystick values
             Y1 = iY1;
             X1 = iX1;
@@ -200,7 +201,7 @@ public class ReubensWildRide extends LinearOpMode {
             D2 = Math.pow(gamepad1.left_trigger, joyScale2);*/
 
 
-            //Foward/Backward
+            //Forward/Backward
             LF += Y2;
             RF += Y2;
             LB += Y2;
@@ -243,7 +244,6 @@ public class ReubensWildRide extends LinearOpMode {
                 leftIntake.setPower(0);
                 rightIntake.setPower(0);
             }
-
             else if(gamepad2.left_trigger > 0.2) {
                 leftIntake.setPower(0);
                 rightIntake.setPower(0);
@@ -257,10 +257,19 @@ public class ReubensWildRide extends LinearOpMode {
                 leftSlide.setPower(-1);
                 rightSlide.setPower(-1);
             }
+            else if(gamepad2.a) {
+                leftSlide.setPower(0.1);
+                rightSlide.setPower(0.1);
+            }
+            else if(gamepad2.y) {
+                leftSlide.setPower(-0.1);
+                rightSlide.setPower(-0.1);
+            }
             else {
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
             }
+
             if (gamepad2.x) {
                 leftForebar.setPosition(0.25);
                 rightForebar.setPosition(0.25);

@@ -101,6 +101,7 @@ public class SenseConePark extends LinearOpMode {
          * (while a streaming session is in flight) *IS* supported.
          */
         webcam.setPipeline(pipeline);
+        webcam.setPipeline(junctionPipeline);
 
         /*
          * Open the connection to the camera device. New in v1.4.0 is the ability
@@ -185,10 +186,10 @@ public class SenseConePark extends LinearOpMode {
             rightForebar = hardwareMap.servo.get("rightForebar");
 
             //Initialize Drive Motors' Directions
-            motorfrontLeft.setDirection(DcMotor.Direction.FORWARD);
-            motorfrontRight.setDirection(DcMotor.Direction.REVERSE);
-            motorbackLeft.setDirection(DcMotor.Direction.FORWARD);
-            motorbackRight.setDirection(DcMotor.Direction.REVERSE);
+            motorfrontLeft.setDirection(DcMotor.Direction.REVERSE);
+            motorfrontRight.setDirection(DcMotor.Direction.FORWARD);
+            motorbackLeft.setDirection(DcMotor.Direction.REVERSE);
+            motorbackRight.setDirection(DcMotor.Direction.FORWARD);
 
             //Initialize Mechanism Motors' Directions
             leftSlide.setDirection(DcMotor.Direction.REVERSE);
@@ -198,11 +199,17 @@ public class SenseConePark extends LinearOpMode {
             leftForebar.setDirection(Servo.Direction.REVERSE);
             rightForebar.setDirection(Servo.Direction.FORWARD);
 
-            moveForward(1.0);
+            moveForwardSlow(2.0);
             color = pipeline.getAnalysis();
 
             telemetry.addData("Analysis", color);
             telemetry.update();
+
+            stop(0.2);
+
+            moveForwardSlow(1.0);
+            moveBackward(1.0);
+
 
             while(junction!="YELLOW") {
                 strafeLeft(0.1);
@@ -210,9 +217,10 @@ public class SenseConePark extends LinearOpMode {
             }
 
             stop(0.2);
-            armUp(0.5);
+            armUp(1.0);
+            armUpSlow(0.5);
 
-            if(color=="GREEN") {
+            /*if(color=="GREEN") {
                 strafeLeft(1.1);
                 stop(1.0);
                 moveForward(0.24);
@@ -224,7 +232,7 @@ public class SenseConePark extends LinearOpMode {
                 strafeRight(1.15);
                 stop(1.0);
                 moveForward(0.24);
-            }
+            }*/
 
             // Don't burn CPU cycles busy-looping in this sample
             sleep(50);
@@ -248,20 +256,20 @@ public class SenseConePark extends LinearOpMode {
     public void moveForwardSlow(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(0.2);
-            motorfrontRight.setPower(0.2);
-            motorbackLeft.setPower(0.2);
-            motorbackRight.setPower(0.2);
+            motorfrontLeft.setPower(0.25);
+            motorfrontRight.setPower(0.25);
+            motorbackLeft.setPower(0.25);
+            motorbackRight.setPower(0.25);
         }
     }
 
     public void moveBackward(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(-1);
-            motorfrontRight.setPower(-1);
-            motorbackLeft.setPower(-1);
-            motorbackRight.setPower(-1);
+            motorfrontLeft.setPower(-0.25);
+            motorfrontRight.setPower(-0.25);
+            motorbackLeft.setPower(-0.25);
+            motorbackRight.setPower(-0.25);
         }
     }
 
@@ -310,6 +318,14 @@ public class SenseConePark extends LinearOpMode {
         while(runtime.time() < run) {
             leftSlide.setPower(0.5);
             rightSlide.setPower(0.5);
+        }
+    }
+
+    public void armUpSlow(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run) {
+            leftSlide.setPower(0.1);
+            rightSlide.setPower(0.1);
         }
     }
 

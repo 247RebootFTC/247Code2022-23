@@ -161,26 +161,32 @@ public class SensePark extends LinearOpMode {
             motorbackLeft.setDirection(DcMotor.Direction.REVERSE);
             motorbackRight.setDirection(DcMotor.Direction.FORWARD);
 
-            telemetry.addData("Analysis", color);
+            /*telemetry.addData("Analysis", color);
             telemetry.addData("Cb Value:", pipeline.getCb());
             telemetry.addData("Cr Value:", pipeline.getCr());
-            telemetry.update();
+            telemetry.update();*/
 
-            moveForward(1.0);
+            moveForward(2.025);
 
             color = pipeline.getAnalysis();
 
             telemetry.addData("Analysis", color);
             telemetry.update();
 
+            stop(1.0);
+
             if(color=="GREEN") {
-                strafeLeft(1.1);
+                strafeLeft(3.3);
+                turnRight(0.2);
+                moveForward(0.5);
                 stop(1.0);
             }
             else if(color=="PINK") {
+                moveForward(0.9);
             }
             else if(color=="ORANGE") {
-                strafeRight(1.15);
+                strafeRight(3.3);
+                moveForward(0.5);
                 stop(1.0);
             }
 
@@ -196,10 +202,10 @@ public class SensePark extends LinearOpMode {
     public void moveForward(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(1);
-            motorfrontRight.setPower(1);
-            motorbackLeft.setPower(1);
-            motorbackRight.setPower(1);
+            motorfrontLeft.setPower(0.25);
+            motorfrontRight.setPower(0.25);
+            motorbackLeft.setPower(0.25);
+            motorbackRight.setPower(0.25);
         }
     }
 
@@ -226,30 +232,30 @@ public class SensePark extends LinearOpMode {
     public void turnRight(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(1);
-            motorfrontRight.setPower(-1);
-            motorbackLeft.setPower(1);
-            motorbackRight.setPower(-1);
+            motorfrontLeft.setPower(0.25);
+            motorfrontRight.setPower(-0.25);
+            motorbackLeft.setPower(0.25);
+            motorbackRight.setPower(-0.25);
         }
     }
 
     public void strafeLeft(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(0.5);
-            motorfrontRight.setPower(-0.5);
-            motorbackLeft.setPower(-0.5);
-            motorbackRight.setPower(0.5);
+            motorfrontLeft.setPower(0.25);
+            motorfrontRight.setPower(-0.25);
+            motorbackLeft.setPower(-0.25);
+            motorbackRight.setPower(0.25);
         }
     }
 
     public void strafeRight(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(-0.5);
-            motorfrontRight.setPower(0.5);
-            motorbackLeft.setPower(0.5);
-            motorbackRight.setPower(-0.5);
+            motorfrontLeft.setPower(-0.25);
+            motorfrontRight.setPower(0.25);
+            motorbackLeft.setPower(0.25);
+            motorbackRight.setPower(-0.25);
         }
     }
 
