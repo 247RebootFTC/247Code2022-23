@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -52,8 +53,11 @@ public class ArmEncoderTest extends LinearOpMode {
             (WHEEL_DIAMETER_INCHES * 3.1415); //this is for wheels only, make new variables for other motors
     //private static final double COUNTS_PER_INCH_CAL     = COUNTS_PER_INCH + 300;
     private static final double DRIVE_SPEED             = 0.4;
-
 */
+
+    private static final double INCHES_PER_REV = 1.978956002259843;
+    private static final double COUNTS_PER_MOTOR_REV    = 537.6;
+
     //Declare Drive Motors
     private DcMotor leftSlide;
     private DcMotor rightSlide;
@@ -61,8 +65,18 @@ public class ArmEncoderTest extends LinearOpMode {
     //The Time Object
     private ElapsedTime runtime=new ElapsedTime();
 
+    double leftInches;
+    double rightInches;
+
     @Override
     public void runOpMode() {
+
+        leftSlide = hardwareMap.dcMotor.get("leftSlide");
+        rightSlide = hardwareMap.dcMotor.get("rightSlide");
+
+        //Initialize drive motors' direction
+        leftSlide.setDirection(DcMotor.Direction.REVERSE);
+        rightSlide.setDirection(DcMotor.Direction.REVERSE);
 
         leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -72,18 +86,18 @@ public class ArmEncoderTest extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        if (opModeIsActive()) {
+        while (opModeIsActive()) {
 
-            //Initialize drive motors
-            leftSlide = hardwareMap.dcMotor.get("leftSlide");
-            rightSlide = hardwareMap.dcMotor.get("rightSlide");
+            telemetry.addData("Left Slide Position (TPR): ", leftSlide.getCurrentPosition());
+            telemetry.addData("Right Slide Position (TPR): ", rightSlide.getCurrentPosition());
 
-            //Initialize drive motors' direction
-            leftSlide.setDirection(DcMotor.Direction.FORWARD);
-            rightSlide.setDirection(DcMotor.Direction.FORWARD);
+            leftInches = ((1)/((leftSlide.getCurrentPosition())/(COUNTS_PER_MOTOR_REV)))*INCHES_PER_REV;
+            rightInches = ((1)/((rightSlide.getCurrentPosition())/(COUNTS_PER_MOTOR_REV)))*INCHES_PER_REV;
 
-            telemetry.addData("Left Slide Position", leftSlide.getCurrentPosition());
-            telemetry.addData("Right Slide Position", rightSlide.getCurrentPosition());
+            telemetry.addData("Left Slide Position (INCHES): ", leftInches);
+            telemetry.addData("Right Slide Position (INCHES): ", rightInches);
+
+            telemetry.update();
 
             if (gamepad2.left_stick_y < 0.0) {
                 leftSlide.setPower(1);
