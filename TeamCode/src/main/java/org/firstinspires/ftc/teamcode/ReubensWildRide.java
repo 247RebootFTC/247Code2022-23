@@ -21,6 +21,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @TeleOp (name="Reuben's Wild Ride")
 public class ReubensWildRide extends LinearOpMode {
 
+    private static final double INCHES_PER_REV = 1.978956002259843;
+    private static final double COUNTS_PER_MOTOR_REV    = 537.6;
+
+    double leftInches;
+    double rightInches;
+
     //This is where we set all of our variables so we can call them in future code
     double tgtPower = 0;
     int armPosition = 0;
@@ -77,6 +83,7 @@ public class ReubensWildRide extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         double pos = 0;
 
         // Initialize Drive Motors
@@ -116,6 +123,10 @@ public class ReubensWildRide extends LinearOpMode {
         leftForebar.setDirection(Servo.Direction.REVERSE);
         rightForebar.setDirection(Servo.Direction.FORWARD);
 
+
+
+        telemetry.addData(">", "DRAGON: PREPARE FOR TAKEOFF");
+        telemetry.update();
         //Wait to start code
         waitForStart();
 
@@ -126,9 +137,23 @@ public class ReubensWildRide extends LinearOpMode {
             if(pos==0) {
                 leftForebar.setPosition(0.25);
                 rightForebar.setPosition(0.25);
+
+                //leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                //rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
                 pos = 1;
             }
 
+            telemetry.addData("Left Slide Position (TPR): ", leftSlide.getCurrentPosition());
+            telemetry.addData("Right Slide Position (TPR): ", rightSlide.getCurrentPosition());
+
+            leftInches = ((1)/((leftSlide.getCurrentPosition())/(COUNTS_PER_MOTOR_REV)))*INCHES_PER_REV;
+            rightInches = ((1)/((rightSlide.getCurrentPosition())/(COUNTS_PER_MOTOR_REV)))*INCHES_PER_REV;
+
+            telemetry.addData("Left Slide Position (INCHES): ", leftInches);
+            telemetry.addData("Right Slide Position (INCHES): ", rightInches);
+
+            telemetry.update();
 
 
             //reset speed variables
@@ -275,8 +300,8 @@ public class ReubensWildRide extends LinearOpMode {
                 rightForebar.setPosition(0.25);
             }
             else if (gamepad2.b) {
-                leftForebar.setPosition(1.0);
-                rightForebar.setPosition(1.0);
+                leftForebar.setPosition(0.89);
+                rightForebar.setPosition(0.89);
             }
         }
 
