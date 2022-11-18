@@ -19,8 +19,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 //import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-@TeleOp (name="Reuben's Wild Ride")
-public class ReubensWildRide extends LinearOpMode {
+@Disabled
+@TeleOp
+public class ArmEncoder extends LinearOpMode {
 
     private static final double INCHES_PER_REV = 1.978956002259843;
     private static final double COUNTS_PER_MOTOR_REV    = 537.6;
@@ -294,6 +295,80 @@ public class ReubensWildRide extends LinearOpMode {
 
         }
 
+    }
+
+    public void encoderDrive(double speed, int pos) {
+        int newLeftTarget;
+        int newRightTarget;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = motorfrontLeft.getCurrentPosition() + pos;
+            newRightTarget = motorfrontRight.getCurrentPosition() + pos;
+            leftSlide.setTargetPosition(newLeftTarget);
+            rightSlide.setTargetPosition(newRightTarget);
+
+            // Turn On RUN_TO_POSITION
+            leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            //used to be motorbackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            //sleep(2000);
+            sleep(20);
+            leftSlide.setPower(Math.abs(speed));
+            rightSlide.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() && (leftSlide.isBusy() && rightSlide.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d :%7d :%7d",
+                        leftSlide,  rightSlide);
+
+                telemetry.addData("Path2",  "Running at %7d :%7d :%7d :%7d",
+                        leftSlide.getCurrentPosition(),
+                        rightSlide.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            leftSlide.setPower(0);
+            rightSlide.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            //sleep(5);   // delete if code not meant to pause
+        }
+    }
+
+    public void initEncoder() {
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Status", "Resetting Encoders");
+        telemetry.update();
+
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Send telemetry message to indicate successful Encoder reset
+        telemetry.addData("Path0",  "Starting at %7d :%7d :%7d :%7d",
+                leftSlide.getCurrentPosition(),
+                rightSlide.getCurrentPosition());
+        telemetry.update();
     }
 
 }

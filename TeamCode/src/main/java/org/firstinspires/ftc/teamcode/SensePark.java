@@ -181,7 +181,7 @@ public class SensePark extends LinearOpMode {
                 moveForward(0.5);
                 stop(1.0);
             }
-            else if(color=="PINK") {
+            else if(color=="PURPLE") {
                 moveForward(0.9);
             }
             else if(color=="ORANGE") {
@@ -435,24 +435,9 @@ public class SensePark extends LinearOpMode {
              * Now that we found the max, we actually need to go and
              * figure out which sample region that value was from
              */
-            if((Cb_val > 110)&&(Cr_val > 140)) // Was it from region 1?
+            if((Cb_val > 125)&&(Cr_val > 110)) // Was it from region 1?
             {
-                position = "PINK"; // Record our analysis
-
-                /*
-                 * Draw a solid rectangle on top of the chosen region.
-                 * Simply a visual aid. Serves no functional purpose.
-                 */
-                Imgproc.rectangle(
-                        input, // Buffer to draw on
-                        region_pointA, // First point which defines the rectangle
-                        region_pointB, // Second point which defines the rectangle
-                        RED, // The color the rectangle is drawn in
-                        -1); // Negative thickness means solid fill
-            }
-            else if((Cb_val < 110)&&(Cr_val > 140)) // Was it from region 2?
-            {
-                position = "ORANGE"; // Record our analysis
+                position = "PURPLE"; // Record our analysis
 
                 /*
                  * Draw a solid rectangle on top of the chosen region.
@@ -465,7 +450,22 @@ public class SensePark extends LinearOpMode {
                         BLUE, // The color the rectangle is drawn in
                         -1); // Negative thickness means solid fill
             }
-            else if((Cb_val > 110)&&(Cr_val > 110)) // Was it from region 3?
+            else if((Cb_val < 120)&&(Cr_val > 125)) // Was it from region 2?
+            {
+                position = "ORANGE"; // Record our analysis
+
+                /*
+                 * Draw a solid rectangle on top of the chosen region.
+                 * Simply a visual aid. Serves no functional purpose.
+                 */
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region_pointA, // First point which defines the rectangle
+                        region_pointB, // Second point which defines the rectangle
+                        RED, // The color the rectangle is drawn in
+                        -1); // Negative thickness means solid fill
+            }
+            else if((Cb_val < 130)&&(Cr_val < 130)) // Was it from region 3?
             {
                 position = "GREEN"; // Record our analysis
 
