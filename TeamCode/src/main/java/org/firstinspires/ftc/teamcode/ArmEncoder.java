@@ -17,9 +17,8 @@ import java.lang.*;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-//import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-@Disabled
 @TeleOp
 public class ArmEncoder extends LinearOpMode {
 
@@ -114,22 +113,19 @@ public class ArmEncoder extends LinearOpMode {
         motorbackLeft.setDirection(DcMotor.Direction.FORWARD);
         motorbackRight.setDirection(DcMotor.Direction.REVERSE);
 
-        //Voltage Sensor
-        /*VoltageSensor voltSensor = hardwareMap.voltageSensor.get("Motor Controller 1");
-        telemetry.addLine(String.valueOf(voltSensor.getVoltage()));
-        telemetry.update();*/
-
         //Initialize Mechanism Motors' Directions
-        leftSlide.setDirection(DcMotor.Direction.REVERSE);
+        leftSlide.setDirection(DcMotor.Direction.FORWARD);
         rightSlide.setDirection(DcMotor.Direction.REVERSE);
 
         //Initialize Servos' Directions
         leftForebar.setDirection(Servo.Direction.REVERSE);
         rightForebar.setDirection(Servo.Direction.FORWARD);
 
+        initEncoder();
 
         telemetry.addData(">", "DRAGON: PREPARE FOR TAKEOFF");
         telemetry.update();
+
         //Wait to start code
         waitForStart();
 
@@ -143,6 +139,11 @@ public class ArmEncoder extends LinearOpMode {
 
                 pos = 1;
             }
+
+            telemetry.addLine(String.valueOf(leftSlide.getCurrentPosition()));
+            telemetry.addLine(String.valueOf(rightSlide.getCurrentPosition()));
+
+            telemetry.update();
 
 
             //reset speed variables
@@ -279,6 +280,9 @@ public class ArmEncoder extends LinearOpMode {
                 leftSlide.setPower(-0.1);
                 rightSlide.setPower(-0.1);
             }
+            else if(gamepad2.dpad_up) {
+                moveArm(0.2, 1000);
+            }
             else {
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
@@ -297,16 +301,17 @@ public class ArmEncoder extends LinearOpMode {
 
     }
 
-    public void encoderDrive(double speed, int pos) {
+    public void moveArm(double speed, int pos) {
         int newLeftTarget;
         int newRightTarget;
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
+
             // Determine new target position, and pass to motor controller
-            newLeftTarget = motorfrontLeft.getCurrentPosition() + pos;
-            newRightTarget = motorfrontRight.getCurrentPosition() + pos;
+            newLeftTarget = pos;
+            newRightTarget = pos;
             leftSlide.setTargetPosition(newLeftTarget);
             rightSlide.setTargetPosition(newRightTarget);
 
@@ -320,8 +325,8 @@ public class ArmEncoder extends LinearOpMode {
             runtime.reset();
             //sleep(2000);
             sleep(20);
-            leftSlide.setPower(Math.abs(speed));
-            rightSlide.setPower(Math.abs(speed));
+            leftSlide.setPower(speed);
+            rightSlide.setPower(speed);
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -332,22 +337,27 @@ public class ArmEncoder extends LinearOpMode {
             while (opModeIsActive() && (leftSlide.isBusy() && rightSlide.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d :%7d :%7d :%7d",
+                /*telemetry.addData("Path1",  "Running to %7d :%7d :%7d :%7d",
                         leftSlide,  rightSlide);
 
                 telemetry.addData("Path2",  "Running at %7d :%7d :%7d :%7d",
                         leftSlide.getCurrentPosition(),
                         rightSlide.getCurrentPosition());
-                telemetry.update();
+                telemetry.update();*/
             }
 
             // Stop all motion;
             leftSlide.setPower(0);
             rightSlide.setPower(0);
 
+            /*leftSlide.setPower(0.1);
+            rightSlide.setPower(0.1);*/
+
             // Turn off RUN_TO_POSITION
-            leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
 
             //sleep(5);   // delete if code not meant to pause
         }
@@ -358,17 +368,20 @@ public class ArmEncoder extends LinearOpMode {
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
 
-        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Path0",  "Starting at %7d :%7d :%7d :%7d",
+        /*telemetry.addData("Path0",  "Starting at %7d :%7d :%7d :%7d",
                 leftSlide.getCurrentPosition(),
                 rightSlide.getCurrentPosition());
-        telemetry.update();
+        telemetry.update();*/
     }
 
 }

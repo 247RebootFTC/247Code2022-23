@@ -22,14 +22,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @TeleOp (name="Reuben's Wild Ride")
 public class ReubensWildRide extends LinearOpMode {
 
-    private static final double INCHES_PER_REV = 1.978956002259843;
-    private static final double COUNTS_PER_MOTOR_REV    = 537.6;
-
-    double leftInches;
-    double rightInches;
-
-    boolean holdUp = false;
-
     //This is where we set all of our variables so we can call them in future code
     double tgtPower = 0;
     int armPosition = 0;
