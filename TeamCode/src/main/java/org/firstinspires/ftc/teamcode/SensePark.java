@@ -166,7 +166,7 @@ public class SensePark extends LinearOpMode {
             telemetry.addData("Cr Value:", pipeline.getCr());
             telemetry.update();*/
 
-            moveForward(2.025);
+            moveForward(1.9);
 
             color = pipeline.getAnalysis();
 
@@ -175,10 +175,15 @@ public class SensePark extends LinearOpMode {
 
             stop(1.0);
 
+            moveForward(0.5);
+            stop(0.5);
+            moveBackward(0.5);
+            stop(0.5);
+
             if(color=="GREEN") {
                 strafeLeft(3.3);
                 turnRight(0.2);
-                moveForward(0.5);
+                moveForward(0.75);
                 stop(1.0);
             }
             else if(color=="PURPLE") {
@@ -186,7 +191,7 @@ public class SensePark extends LinearOpMode {
             }
             else if(color=="ORANGE") {
                 strafeRight(3.3);
-                moveForward(0.5);
+                moveForward(0.65);
                 stop(1.0);
             }
 
@@ -212,10 +217,10 @@ public class SensePark extends LinearOpMode {
     public void moveBackward(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(-1);
-            motorfrontRight.setPower(-1);
-            motorbackLeft.setPower(-1);
-            motorbackRight.setPower(-1);
+            motorfrontLeft.setPower(-0.25);
+            motorfrontRight.setPower(-0.25);
+            motorbackLeft.setPower(-0.25);
+            motorbackRight.setPower(-0.25);
         }
     }
 
