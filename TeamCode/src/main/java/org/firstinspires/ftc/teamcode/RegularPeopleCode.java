@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 //@Disabled
 @TeleOp
-public class BestCode extends LinearOpMode {
+public class RegularPeopleCode extends LinearOpMode {
 
     private static final double INCHES_PER_REV = 1.978956002259843;
     private static final double COUNTS_PER_MOTOR_REV    = 537.6;
@@ -153,69 +153,6 @@ public class BestCode extends LinearOpMode {
             LB = 0;
             RB = 0;
 
-            if (gamepad1.right_trigger > 0.5) {
-                faxmachine = !faxmachine;
-            }
-
-            iY1 = 0.7 * (Math.pow(gamepad1.right_stick_y * joyScale, pwr));
-            iX1 = 0.7 * (Math.pow(gamepad1.right_stick_x * joyScale, pwr));
-            iY2 = 0.7 * (Math.pow(gamepad1.left_stick_y * joyScale, pwr));
-            iX2 = 0.7 * (Math.pow(gamepad1.left_stick_x * joyScale, pwr));
-
-            if (faxmachine) {
-                iY1 = gamepad1.right_stick_y * joyScale;
-                iX1 = gamepad1.right_stick_x * joyScale;
-                iY2 = gamepad1.left_stick_y * joyScale;
-                iX2 = gamepad1.left_stick_x * joyScale;
-            }
-
-            //get joystick values
-            Y1 = iY1;
-            X1 = iX1;
-            Y2 = iY2;
-            X2 = iX2;
-
-
-            telemetry.addLine(String.valueOf(gamepad1.right_stick_y));
-            telemetry.addLine(String.valueOf(gamepad1.right_stick_x));
-            telemetry.addLine(String.valueOf(gamepad1.left_stick_y));
-            telemetry.addLine(String.valueOf(gamepad1.left_stick_x));
-
-            telemetry.update();
-/*
-            if((gamepad1.right_stick_y > 0.75)||(gamepad1.right_stick_y < -0.75)) {
-                Y1 = gamepad1.right_stick_y * joyScale;
-            }
-            else {
-                Y1 = gamepad1.right_stick_y * joyScale2;
-            }
-            if((gamepad1.right_stick_x > 0.75)||(gamepad1.right_stick_x < -0.75)) {
-                X1 = gamepad1.right_stick_x * joyScale;
-            }
-            else {
-                X1 = gamepad1.right_stick_x * joyScale2;
-            }
-            if((gamepad1.left_stick_y > 0.75)||(gamepad1.left_stick_y < -0.75)) {
-                Y2 = gamepad1.left_stick_y * joyScale;
-            }
-            else {
-                Y2 = gamepad1.left_stick_y * joyScale2;
-            }
-            if((gamepad1.left_stick_x > 0.75)||(gamepad1.left_stick_x < -0.75)) {
-                X2 = gamepad1.left_stick_x * joyScale;
-            }
-            else {
-                X2 = gamepad1.left_stick_x * joyScale2;
-            }
-
- */
-            /*X1 = gamepad1.right_stick_x * joyScale2;
-            Y2 = gamepad1.left_stick_y * joyScale2;
-            X2 = gamepad1.left_stick_x * joyScale2;*/
-
-            /*D1 = Math.pow(gamepad1.right_trigger, joyScale2);
-            D2 = Math.pow(gamepad1.left_trigger, joyScale2);*/
-
 
             //Forward/Backward
             LF += Y2;
@@ -299,15 +236,15 @@ public class BestCode extends LinearOpMode {
                 holdUp = false;
                 moveUp = false;
                 moveDown = false;
-                leftSlide.setPower(0.6);
-                rightSlide.setPower(0.6);
+                leftSlide.setPower(-0.5*gamepad2.left_stick_y);
+                rightSlide.setPower(-0.5*gamepad2.left_stick_y);
             }
             else if (gamepad2.left_stick_y > 0.0) {
                 holdUp = false;
                 moveUp = false;
                 moveDown = false;
-                leftSlide.setPower(-0.6);
-                rightSlide.setPower(-0.6);
+                leftSlide.setPower(-0.5*gamepad2.left_stick_y);
+                rightSlide.setPower(-0.5*gamepad2.left_stick_y);
             }
             else if(gamepad2.a) {
                 holdUp = false;
@@ -371,6 +308,19 @@ public class BestCode extends LinearOpMode {
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
             }
+
+            /*if (gamepad2.x) {
+                telemetry.addLine(String.valueOf(leftForebar.getPosition()));
+                telemetry.addLine(String.valueOf(leftForebar.getPosition()));
+                if((leftForebar.getPosition() > 0.2)&&(leftForebar.getPosition() < 0.3)) {
+                    leftForebar.setPosition(0.89);
+                    rightForebar.setPosition(0.89);
+                }
+                else if((leftForebar.getPosition() > 0.85)&&(leftForebar.getPosition() < 0.95)) {
+                    leftForebar.setPosition(0.25);
+                    rightForebar.setPosition(0.25);
+                }
+            }*/
 
             if (gamepad2.x) {
                 leftForebar.setPosition(0.25);

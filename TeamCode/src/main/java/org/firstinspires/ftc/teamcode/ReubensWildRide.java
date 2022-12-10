@@ -45,8 +45,8 @@ public class ReubensWildRide extends LinearOpMode {
     private DcMotor rightSlide;
 
     //Declare CR Servos
-    private CRServo leftIntake;
-    private CRServo rightIntake;
+    private CRServo frontIntake;
+    private CRServo backIntake;
 
     //Declare Regular Servos
     private Servo leftForebar;
@@ -100,8 +100,8 @@ public class ReubensWildRide extends LinearOpMode {
         rightSlide = hardwareMap.dcMotor.get("rightSlide");
 
         //Initialize CR (Continuous Rotation) Servos
-        leftIntake = hardwareMap.crservo.get("leftIntake");
-        rightIntake = hardwareMap.crservo.get("rightIntake");
+        frontIntake = hardwareMap.crservo.get("frontIntake");
+        backIntake = hardwareMap.crservo.get("backIntake");
 
         //Initialize Regular Servos
         leftForebar = hardwareMap.servo.get("leftForebar");
@@ -118,8 +118,8 @@ public class ReubensWildRide extends LinearOpMode {
         rightSlide.setDirection(DcMotor.Direction.REVERSE);
 
         //Initialize Servos' Directions
-        leftForebar.setDirection(Servo.Direction.REVERSE);
-        rightForebar.setDirection(Servo.Direction.FORWARD);
+        leftForebar.setDirection(Servo.Direction.FORWARD);
+        rightForebar.setDirection(Servo.Direction.REVERSE);
 
 
         telemetry.addData(">", "DRAGON: PREPARE FOR TAKEOFF");
@@ -243,20 +243,20 @@ public class ReubensWildRide extends LinearOpMode {
             motorbackRight.setPower(RB);
 
             if(gamepad2.right_bumper) {
-                leftIntake.setPower(-1);
-                rightIntake.setPower(1);
+                frontIntake.setPower(-1);
+                backIntake.setPower(1);
             }
             else if(gamepad2.left_bumper) {
-                leftIntake.setPower(1);
-                rightIntake.setPower(-1);
+                frontIntake.setPower(1);
+                backIntake.setPower(-1);
             }
             else if(gamepad2.right_trigger > 0.2) {
-                leftIntake.setPower(0);
-                rightIntake.setPower(0);
+                frontIntake.setPower(0);
+                backIntake.setPower(0);
             }
             else if(gamepad2.left_trigger > 0.2) {
-                leftIntake.setPower(0);
-                rightIntake.setPower(0);
+                frontIntake.setPower(0);
+                backIntake.setPower(0);
             }
 
             if (gamepad2.left_stick_y < 0.0) {
