@@ -29,10 +29,14 @@ public class RegularPeopleCode extends LinearOpMode {
     double leftInches;
     double rightInches;
 
+    int beginning = 0;
+
     boolean holdUp = false;
     boolean moveUp = false;
     boolean moveDown = false;
     double pos = 0;
+
+    double forebarPos = 0.25;
 
     //This is where we set all of our variables so we can call them in future code
     double tgtPower = 0;
@@ -51,6 +55,10 @@ public class RegularPeopleCode extends LinearOpMode {
     //Declare CR Servos
     private CRServo frontIntake;
     private CRServo backIntake;
+        //Odometry Servos
+    private CRServo leftOdo;
+    private CRServo rightOdo;
+    private CRServo frontOdo;
 
     //Declare Regular Servos
     private Servo leftForebar;
@@ -82,7 +90,7 @@ public class RegularPeopleCode extends LinearOpMode {
     //double D2;
 
     //analog values
-    double joyScale = 1;
+    double joyScale = 0.8;
     double joyScale2 = 0.6;
     double motorMax = 0.9;
 
@@ -102,6 +110,11 @@ public class RegularPeopleCode extends LinearOpMode {
         //Initialize CR (Continuous Rotation) Servos
         frontIntake = hardwareMap.crservo.get("frontIntake");
         backIntake = hardwareMap.crservo.get("backIntake");
+
+        //Odometry Servos
+        leftOdo = hardwareMap.crservo.get("leftOdo");
+        rightOdo = hardwareMap.crservo.get("rightOdo");
+        frontOdo = hardwareMap.crservo.get("frontOdo");
 
         //Initialize Regular Servos
         leftForebar = hardwareMap.servo.get("leftForebar");
@@ -123,7 +136,7 @@ public class RegularPeopleCode extends LinearOpMode {
 
         initEncoder();
 
-        telemetry.addData("DRAGON: ", "I am in extreme agony");
+        telemetry.addData("DRAGON: ", "I am in extremely extreme agony");
         telemetry.update();
 
         //Wait to start code
@@ -134,15 +147,20 @@ public class RegularPeopleCode extends LinearOpMode {
         while (opModeIsActive()) {
 
             //automatically sets fore
-            if (pos == 0) {
+            if (beginning == 0) {
                 leftForebar.setPosition(0.25);
                 rightForebar.setPosition(0.25);
 
-                pos = 1;
+                liftOdo(0.01);
+                stopOdo(1.0);
+
+                beginning = 1;
             }
 
             telemetry.addLine(String.valueOf(leftSlide.getCurrentPosition()));
             telemetry.addLine(String.valueOf(rightSlide.getCurrentPosition()));
+
+            telemetry.addLine("Fourbar Position: " + String.valueOf(forebarPos));
 
             telemetry.update();
 
@@ -152,6 +170,11 @@ public class RegularPeopleCode extends LinearOpMode {
             RF = 0;
             LB = 0;
             RB = 0;
+
+            Y1 = gamepad1.right_stick_y * joyScale;
+            X1 = gamepad1.right_stick_x * joyScale;
+            Y2 = gamepad1.left_stick_y * joyScale;
+            X2 = gamepad1.left_stick_x * joyScale2;
 
 
             //Forward/Backward
@@ -208,6 +231,11 @@ public class RegularPeopleCode extends LinearOpMode {
                     rightSlide.setPower(0.1);
                     telemetry.addLine("MOVE UP FALSE");
                     telemetry.update();
+                    if(pos==2600) {
+                        leftForebar.setPosition(0.89);
+                        rightForebar.setPosition(0.89);
+                        forebarPos = 0.89;
+                    }
                 }
                 else {
                     leftSlide.setPower(1.0);
@@ -265,7 +293,7 @@ public class RegularPeopleCode extends LinearOpMode {
                 holdUp = false;
                 moveUp = false;
                 moveDown = false;
-                pos = 2900;
+                pos = 2600;
                 moveArm();
             }
             else if(gamepad2.dpad_right) {
@@ -309,30 +337,70 @@ public class RegularPeopleCode extends LinearOpMode {
                 rightSlide.setPower(0);
             }
 
-            /*if (gamepad2.x) {
-                telemetry.addLine(String.valueOf(leftForebar.getPosition()));
-                telemetry.addLine(String.valueOf(leftForebar.getPosition()));
-                if((leftForebar.getPosition() > 0.2)&&(leftForebar.getPosition() < 0.3)) {
+            if (gamepad2.x) {
+                telemetry.addLine("Beginning Fourbar Position: " + String.valueOf(forebarPos));
+
+                if(forebarPos==0.25) {
                     leftForebar.setPosition(0.89);
                     rightForebar.setPosition(0.89);
+                    forebarPos = 0.89;
                 }
-                else if((leftForebar.getPosition() > 0.85)&&(leftForebar.getPosition() < 0.95)) {
+                else if(forebarPos==0.89) {
                     leftForebar.setPosition(0.25);
                     rightForebar.setPosition(0.25);
+                    forebarPos = 0.25;
                 }
-            }*/
 
-            if (gamepad2.x) {
+                keepForebar(1.0);
+
+                telemetry.addLine("End Fourbar Position: " + String.valueOf(forebarPos));
+            }
+
+            /*if (gamepad2.x) {
                 leftForebar.setPosition(0.25);
                 rightForebar.setPosition(0.25);
             }
             else if (gamepad2.b) {
                 leftForebar.setPosition(0.89);
                 rightForebar.setPosition(0.89);
-            }
+            }*/
 
         }
 
+    }
+
+    public void keepForebar(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftForebar.setPosition(forebarPos);
+            rightForebar.setPosition(forebarPos);
+        }
+    }
+
+    public void stop(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftSlide.setPower(0);
+            rightSlide.setPower(0);
+        }
+    }
+
+    public void liftOdo(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftOdo.setPower(0.02);
+            rightOdo.setPower(0.02);
+            frontOdo.setPower(0.02);
+        }
+    }
+
+    public void stopOdo(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftOdo.setPower(0);
+            rightOdo.setPower(0);
+            frontOdo.setPower(0);
+        }
     }
 
     public void moveArm() {
@@ -341,6 +409,7 @@ public class RegularPeopleCode extends LinearOpMode {
         telemetry.addLine("RIGHT SLIDE POS: " + String.valueOf(rightSlide.getCurrentPosition()));
         telemetry.addLine("POS: " + String.valueOf(pos));
         telemetry.update();
+
 
         //MOVE UP
         if((pos > (-1*leftSlide.getCurrentPosition()))&&((pos > (-1*rightSlide.getCurrentPosition())))) {
@@ -355,6 +424,13 @@ public class RegularPeopleCode extends LinearOpMode {
         }
         //MOVE DOWN
         else if((pos < (-1*leftSlide.getCurrentPosition()))&&((pos < (-1*rightSlide.getCurrentPosition())))) {
+
+            if((pos==300)&&((-1*rightSlide.getCurrentPosition()) > 2000)) {
+                leftForebar.setPosition(0.25);
+                rightForebar.setPosition(0.25);
+                forebarPos = 0.25;
+                stop(0.25);
+            }
 
             telemetry.addLine("IN MOVE DOWN STATEMENT");
             telemetry.update();

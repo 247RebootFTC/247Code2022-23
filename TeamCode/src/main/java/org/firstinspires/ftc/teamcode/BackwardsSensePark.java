@@ -22,10 +22,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -39,6 +37,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -48,8 +47,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * the sample regions over the first 3 stones.
  */
 @Autonomous
-@Disabled
-public class SensePark extends LinearOpMode {
+public class BackwardsSensePark extends LinearOpMode {
 
     OpenCvWebcam webcam;
     SkystoneDeterminationPipeline pipeline = new SkystoneDeterminationPipeline();
@@ -59,6 +57,10 @@ public class SensePark extends LinearOpMode {
     private DcMotor motorfrontRight;
     private DcMotor motorbackLeft;
     private DcMotor motorbackRight;
+
+    //Declare Regular Servos
+    private Servo leftForebar;
+    private Servo rightForebar;
 
     //The Time Object
     private ElapsedTime runtime = new ElapsedTime();
@@ -157,18 +159,28 @@ public class SensePark extends LinearOpMode {
             motorbackLeft = hardwareMap.dcMotor.get("motorbackLeft");
             motorbackRight = hardwareMap.dcMotor.get("motorbackRight");
 
+            //Initialize Regular Servos
+            leftForebar = hardwareMap.servo.get("leftForebar");
+            rightForebar = hardwareMap.servo.get("rightForebar");
+
             //Initialize Drive Motors' Directions
             motorfrontLeft.setDirection(DcMotor.Direction.REVERSE);
             motorfrontRight.setDirection(DcMotor.Direction.FORWARD);
             motorbackLeft.setDirection(DcMotor.Direction.REVERSE);
             motorbackRight.setDirection(DcMotor.Direction.FORWARD);
 
+            //Initialize Servos' Directions
+            leftForebar.setDirection(Servo.Direction.FORWARD);
+            rightForebar.setDirection(Servo.Direction.REVERSE);
+
             /*telemetry.addData("Analysis", color);
             telemetry.addData("Cb Value:", pipeline.getCb());
             telemetry.addData("Cr Value:", pipeline.getCr());
             telemetry.update();*/
 
-            moveForward(1.9);
+            moveForebar();
+
+            moveBackward(1.9);
 
             color = pipeline.getAnalysis();
 
@@ -177,23 +189,23 @@ public class SensePark extends LinearOpMode {
 
             stop(1.0);
 
-            moveForward(0.5);
-            stop(0.5);
             moveBackward(0.5);
+            stop(0.5);
+            moveForward(0.5);
             stop(0.5);
 
             if(color=="GREEN") {
-                strafeLeft(3.3);
-                turnRight(0.2);
-                moveForward(0.75);
+                strafeRight(3.5);
+                turnLeft(0.2);
+                moveBackward(0.75);
                 stop(1.0);
             }
             else if(color=="PURPLE") {
-                moveForward(0.9);
+                moveBackward(0.9);
             }
             else if(color=="ORANGE") {
-                strafeRight(3.3);
-                moveForward(0.65);
+                strafeLeft(3.3);
+                moveBackward(0.65);
                 stop(1.0);
             }
 
@@ -229,10 +241,10 @@ public class SensePark extends LinearOpMode {
     public void turnLeft(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(-1);
-            motorfrontRight.setPower(1);
-            motorbackLeft.setPower(-1);
-            motorbackRight.setPower(1);
+            motorfrontLeft.setPower(-0.25);
+            motorfrontRight.setPower(0.25);
+            motorbackLeft.setPower(-0.25);
+            motorbackRight.setPower(0.25);
         }
     }
 
@@ -246,7 +258,7 @@ public class SensePark extends LinearOpMode {
         }
     }
 
-    public void strafeLeft(double time){
+    public void strafeLeft(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
             motorfrontLeft.setPower(0.25);
@@ -264,6 +276,11 @@ public class SensePark extends LinearOpMode {
             motorbackLeft.setPower(0.25);
             motorbackRight.setPower(-0.25);
         }
+    }
+
+    public void moveForebar() {
+        leftForebar.setPosition(0);
+        rightForebar.setPosition(0);
     }
 
     public void stop(double time){
