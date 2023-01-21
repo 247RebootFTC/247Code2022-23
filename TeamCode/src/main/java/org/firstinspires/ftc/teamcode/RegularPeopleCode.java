@@ -37,6 +37,9 @@ public class RegularPeopleCode extends LinearOpMode {
     double pos = 0;
 
     double forebarPos = 0.25;
+    double clawPos = 0.0;
+    double fourbarPos = 0;
+    double linkagePos = 0;
 
     //This is where we set all of our variables so we can call them in future code
     double tgtPower = 0;
@@ -53,8 +56,7 @@ public class RegularPeopleCode extends LinearOpMode {
     private DcMotor rightSlide;
 
     //Declare CR Servos
-    private CRServo frontIntake;
-    private CRServo backIntake;
+    private CRServo intake;
         //Odometry Servos
     private CRServo leftOdo;
     private CRServo rightOdo;
@@ -63,6 +65,11 @@ public class RegularPeopleCode extends LinearOpMode {
     //Declare Regular Servos
     private Servo leftForebar;
     private Servo rightForebar;
+    private Servo rightLinkage;
+    private Servo leftLinkage;
+    private Servo left4bar;
+    private Servo right4bar;
+    private Servo claw;
 
     //Time Variable
     private ElapsedTime runtime = new ElapsedTime();
@@ -90,7 +97,7 @@ public class RegularPeopleCode extends LinearOpMode {
     //double D2;
 
     //analog values
-    double joyScale = 0.8;
+    double joyScale = 0.6;
     double joyScale2 = 0.6;
     double motorMax = 0.9;
 
@@ -108,8 +115,7 @@ public class RegularPeopleCode extends LinearOpMode {
         rightSlide = hardwareMap.dcMotor.get("rightSlide");
 
         //Initialize CR (Continuous Rotation) Servos
-        frontIntake = hardwareMap.crservo.get("frontIntake");
-        backIntake = hardwareMap.crservo.get("backIntake");
+        intake = hardwareMap.crservo.get("intake");
 
         //Odometry Servos
         leftOdo = hardwareMap.crservo.get("leftOdo");
@@ -119,6 +125,11 @@ public class RegularPeopleCode extends LinearOpMode {
         //Initialize Regular Servos
         leftForebar = hardwareMap.servo.get("leftForebar");
         rightForebar = hardwareMap.servo.get("rightForebar");
+        leftLinkage =  hardwareMap.servo.get("leftLinkage");
+        rightLinkage = hardwareMap.servo. get("rightLinkge");
+        left4bar =  hardwareMap.servo.get("left4bar");
+        right4bar = hardwareMap.servo. get("right4bar");
+        claw = hardwareMap.servo. get("claw");
 
         //Initialize Drive Motors' Directions
         motorfrontLeft.setDirection(DcMotor.Direction.FORWARD);
@@ -133,6 +144,8 @@ public class RegularPeopleCode extends LinearOpMode {
         //Initialize Servos' Directions
         leftForebar.setDirection(Servo.Direction.FORWARD);
         rightForebar.setDirection(Servo.Direction.REVERSE);
+        leftLinkage.setDirection(Servo.Direction.FORWARD);
+        rightLinkage.setDirection(Servo.Direction.REVERSE);
 
         initEncoder();
 
@@ -151,8 +164,8 @@ public class RegularPeopleCode extends LinearOpMode {
                 leftForebar.setPosition(0.25);
                 rightForebar.setPosition(0.25);
 
-                liftOdo(0.01);
-                stopOdo(1.0);
+                /*liftOdo(0.01);
+                stopOdo(1.0);*/
 
                 beginning = 1;
             }
@@ -209,17 +222,13 @@ public class RegularPeopleCode extends LinearOpMode {
             motorbackRight.setPower(RB);
 
             if (gamepad2.right_bumper) {
-                frontIntake.setPower(-1);
-                backIntake.setPower(1);
+                intake.setPower(-1);
             } else if (gamepad2.left_bumper) {
-                frontIntake.setPower(1);
-                backIntake.setPower(-1);
+                intake.setPower(1);
             } else if (gamepad2.right_trigger > 0.2) {
-                frontIntake.setPower(0);
-                backIntake.setPower(0);
+                intake.setPower(0);
             } else if (gamepad2.left_trigger > 0.2) {
-                frontIntake.setPower(0);
-                backIntake.setPower(0);
+                intake.setPower(0);
             }
 
 
@@ -231,7 +240,7 @@ public class RegularPeopleCode extends LinearOpMode {
                     rightSlide.setPower(0.1);
                     telemetry.addLine("MOVE UP FALSE");
                     telemetry.update();
-                    if(pos==2600) {
+                    if(pos==2700) {
                         leftForebar.setPosition(0.89);
                         rightForebar.setPosition(0.89);
                         forebarPos = 0.89;
@@ -274,7 +283,7 @@ public class RegularPeopleCode extends LinearOpMode {
                 leftSlide.setPower(-0.5*gamepad2.left_stick_y);
                 rightSlide.setPower(-0.5*gamepad2.left_stick_y);
             }
-            else if(gamepad2.a) {
+            /*else if(gamepad2.a) {
                 holdUp = false;
                 moveUp = false;
                 moveDown = false;
@@ -287,13 +296,13 @@ public class RegularPeopleCode extends LinearOpMode {
                 moveDown = false;
                 leftSlide.setPower(-0.1);
                 rightSlide.setPower(-0.1);
-            }
+            }*/
             else if(gamepad2.dpad_up) {
                 //High Junction
                 holdUp = false;
                 moveUp = false;
                 moveDown = false;
-                pos = 2600;
+                pos = 2700;
                 moveArm();
             }
             else if(gamepad2.dpad_right) {
@@ -353,17 +362,51 @@ public class RegularPeopleCode extends LinearOpMode {
 
                 keepForebar(1.0);
 
-                telemetry.addLine("End Fourbar Position: " + String.valueOf(forebarPos));
+                telemetry.addLine("End Forebrar Position: " + String.valueOf(forebarPos));
             }
 
-            /*if (gamepad2.x) {
-                leftForebar.setPosition(0.25);
-                rightForebar.setPosition(0.25);
+            if (gamepad2.y) {
+                if(clawPos==0) {
+                    claw.setPosition(0.18);
+                    clawPos = 0.18;
+                }
+                else if(clawPos==0.18) {
+                    claw.setPosition(0);
+                    clawPos = 0;
+                }
+
+                keepClaw(1.0);
             }
-            else if (gamepad2.b) {
-                leftForebar.setPosition(0.89);
-                rightForebar.setPosition(0.89);
-            }*/
+
+            if (gamepad1.b) {
+                if(linkagePos==0) {
+                    leftLinkage.setPosition(0.2);
+                    rightLinkage.setPosition(0.2);
+                    linkagePos = 0.2;
+                }
+                else if(linkagePos==0.2) {
+                    leftLinkage.setPosition(0);
+                    rightLinkage.setPosition(0);
+                    linkagePos = 0;
+                }
+
+                keepLinkage(1.0);
+            }
+
+            if (gamepad1.a) {
+                if(fourbarPos==0) {
+                    left4bar.setPosition(0.2);
+                    right4bar.setPosition(0.2);
+                    fourbarPos = 0.2;
+                }
+                else if(fourbarPos==0.2) {
+                    left4bar.setPosition(0);
+                    right4bar.setPosition(0);
+                    fourbarPos = 0;
+                }
+
+                keep4bar(1.0);
+            }
 
         }
 
@@ -374,6 +417,29 @@ public class RegularPeopleCode extends LinearOpMode {
         while(runtime.time() < run){
             leftForebar.setPosition(forebarPos);
             rightForebar.setPosition(forebarPos);
+        }
+    }
+
+    public void keepClaw(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            claw.setPosition(clawPos);
+        }
+    }
+
+    public void keepLinkage(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftLinkage.setPosition(linkagePos);
+            rightLinkage.setPosition(linkagePos);
+        }
+    }
+
+    public void keep4bar(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            left4bar.setPosition(fourbarPos);
+            right4bar.setPosition(fourbarPos);
         }
     }
 

@@ -1,29 +1,15 @@
-/*
- * Copyright (c) 2020 OpenFTC Team
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+package org.firstinspires.ftc.teamcode.drive.opmode;
 
-package org.firstinspires.ftc.teamcode;
-
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.Servo.Direction;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -36,81 +22,50 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 /*
- * This sample demonstrates a basic (but battle-tested and essentially
- * 100% accurate) method of detecting the skystone when lined up with
- * the sample regions over the first 3 stones.
+ * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous
-public class BackwardsSensePark extends LinearOpMode {
+@Autonomous(group = "drive")
+public class rightSideOdo extends LinearOpMode {
 
-    OpenCvWebcam webcam;
-    SkystoneDeterminationPipeline pipeline = new SkystoneDeterminationPipeline();
+    double forebarPos = 0.25;
 
-    //Declare Drive Motors
-    private DcMotor motorfrontLeft;
-    private DcMotor motorfrontRight;
-    private DcMotor motorbackLeft;
-    private DcMotor motorbackRight;
+    //Declare Mechanism Motors
+    private DcMotor leftSlide;
+    private DcMotor rightSlide;
+
+    //Declare CR Servos
+    private CRServo intake;
+    //Odometry Servos
+    private CRServo leftOdo;
+    private CRServo rightOdo;
+    private CRServo frontOdo;
 
     //Declare Regular Servos
     private Servo leftForebar;
     private Servo rightForebar;
+    //private Servo leftLinkage;
+    //private Servo rightLinkage;
+    //private Servo claw;
 
-    //The Time Object
+    //Time Variable
     private ElapsedTime runtime = new ElapsedTime();
 
+    OpenCvWebcam webcam;
+    SkystoneDeterminationPipeline pipeline = new SkystoneDeterminationPipeline();
+
     @Override
-    public void runOpMode() {
-        /*
-         * Instantiate an OpenCvCamera object for the camera we'll be using.
-         * In this sample, we're using a webcam. Note that you will need to
-         * make sure you have added the webcam to your configuration file and
-         * adjusted the name here to match what you named it in said config file.
-         *
-         * We pass it the view that we wish to use for camera monitor (on
-         * the RC phone). If no camera monitor is desired, use the alternate
-         * single-parameter constructor instead (commented out below)
-         */
+    public void runOpMode() throws InterruptedException {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        // OR...  Do Not Activate the Camera Monitor View
-        //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
 
-        /*
-         * Specify the image processing pipeline we wish to invoke upon receipt
-         * of a frame from the camera. Note that switching pipelines on-the-fly
-         * (while a streaming session is in flight) *IS* supported.
-         */
         webcam.setPipeline(pipeline);
 
-        /*
-         * Open the connection to the camera device. New in v1.4.0 is the ability
-         * to open the camera asynchronously, and this is now the recommended way
-         * to do it. The benefits of opening async include faster init time, and
-         * better behavior when pressing stop during init (i.e. less of a chance
-         * of tripping the stuck watchdog)
-         *
-         * If you really want to open synchronously, the old method is still available.
-         */
-        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-        /*
-         * NOTE: Many comments have been omitted from this sample for the
-         * sake of conciseness. If you're just starting out with EasyOpenCv,
-         * you should take a look at {@link InternalCamera1Example} or its
-         * webcam counterpart, {@link WebcamExample} first.
-         */
-
-        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-        // out when the RC activity is in portrait. We do our actual image processing assuming
-        // landscape orientation, though.
-        //Camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+        webcam.setMillisecondsPermissionTimeout(2500);
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -144,155 +99,258 @@ public class BackwardsSensePark extends LinearOpMode {
             }
         });
 
-        telemetry.addData(">", "DRAGON: ATTAAAAAAAAAAAACK");
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        telemetry.addData(">", "DRAGON: FIIIIIIIIIIRE");
         telemetry.update();
 
         waitForStart();
 
         String color;
 
-        if (opModeIsActive()) {
+        //if (isStopRequested()) return;
 
-            //Initialize Drive Motors
-            motorfrontLeft = hardwareMap.dcMotor.get("motorfrontLeft");
-            motorfrontRight = hardwareMap.dcMotor.get("motorfrontRight");
-            motorbackLeft = hardwareMap.dcMotor.get("motorbackLeft");
-            motorbackRight = hardwareMap.dcMotor.get("motorbackRight");
+        if(opModeIsActive()) {
+
+            //Initialize Mechanism Motors
+            leftSlide = hardwareMap.dcMotor.get("leftSlide");
+            rightSlide = hardwareMap.dcMotor.get("rightSlide");
+
+            //Initialize CR (Continuous Rotation) Servos
+            intake = hardwareMap.crservo.get("intake");
+
+            //Odometry Servos
+            leftOdo = hardwareMap.crservo.get("leftOdo");
+            rightOdo = hardwareMap.crservo.get("rightOdo");
+            frontOdo = hardwareMap.crservo.get("frontOdo");
 
             //Initialize Regular Servos
             leftForebar = hardwareMap.servo.get("leftForebar");
             rightForebar = hardwareMap.servo.get("rightForebar");
+            //leftLinkage = hardwareMap.servo.get("leftLinkage");
+            //rightLinkage = hardwareMap.servo.get("rightLinkage");
+            //claw = hardwareMap.servo.get("claw");
 
-            //Initialize Drive Motors' Directions
-            motorfrontLeft.setDirection(DcMotor.Direction.REVERSE);
-            motorfrontRight.setDirection(DcMotor.Direction.FORWARD);
-            motorbackLeft.setDirection(DcMotor.Direction.REVERSE);
-            motorbackRight.setDirection(DcMotor.Direction.FORWARD);
+            //Initialize Mechanism Motors' Directions
+            leftSlide.setDirection(DcMotor.Direction.FORWARD);
+            rightSlide.setDirection(DcMotor.Direction.REVERSE);
 
             //Initialize Servos' Directions
             leftForebar.setDirection(Servo.Direction.FORWARD);
             rightForebar.setDirection(Servo.Direction.REVERSE);
+            //leftLinkage.setDirection(Servo.Direction.FORWARD);
+            //rightLinkage.setDirection(Servo.Direction.REVERSE);
 
-            /*telemetry.addData("Analysis", color);
-            telemetry.addData("Cb Value:", pipeline.getCb());
-            telemetry.addData("Cr Value:", pipeline.getCr());
-            telemetry.update();*/
-
+            //intake(0.5);
+            keepForebar(0.25);
             moveForebar();
 
-            moveBackward(1.9);
+            Trajectory traj = drive.trajectoryBuilder(new Pose2d(0, 0, Math.toRadians(0)), Math.toRadians(0))
+                    .lineToLinearHeading(new Pose2d(-24, 0, Math.toRadians(0)))
+                    .build();
+
+            Trajectory traj2 = drive.trajectoryBuilder(new Pose2d(-24, 0, Math.toRadians(0)), Math.toRadians(0))
+                    .lineToLinearHeading(new Pose2d(-48, 0, Math.toRadians(-100)))
+                    .build();
+
+            Trajectory traj3 = drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-100)), Math.toRadians(0))
+                    .lineToLinearHeading(new Pose2d(-62, -7.5, Math.toRadians(-100)))
+                    .build();
+
+            Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(-62, -7.5, Math.toRadians(-100)), Math.toRadians(0))
+                    .lineToLinearHeading(new Pose2d(-48, 0, Math.toRadians(-100)))
+                    .build();
+
+            Trajectory park2 = drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-100)), Math.toRadians(0))
+                    .lineToLinearHeading(new Pose2d(-36, 0, Math.toRadians(180)))
+                    .build();
+
+            Trajectory park1= drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-100)), Math.toRadians(0))
+                    .lineToLinearHeading(new Pose2d(-48, -24, Math.toRadians(180)))
+                    .build();
+
+            Trajectory park3= drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-100)), Math.toRadians(0))
+                    .lineToLinearHeading(new Pose2d(-48, 24, Math.toRadians(180)))
+                    .build();
+
+            drive.followTrajectory(traj);
 
             color = pipeline.getAnalysis();
-
             telemetry.addData("Analysis", color);
             telemetry.update();
 
-            stop(1.0);
+            drive.followTrajectory(traj2);
 
-            moveBackward(0.5);
-            stop(0.5);
-            moveForward(0.5);
-            stop(0.5);
+            forebarOPos();
+            moveArmUp(2700);
 
-            if(color=="GREEN") {
-                strafeRight(3.3);
-                turnLeft(0.2);
-                moveBackward(0.75);
-                stop(1.0);
+            drive.followTrajectory(traj3);
+
+            //stopIntake(1.0);
+            //outtake(1.0);
+            //stopIntake(0.1);
+
+            drive.followTrajectory(traj4);
+
+            forebarIPos();
+            stopSlides(0.5);
+            moveArmDown(0);
+
+            drive.followTrajectory(park1);
+
+            /*if (color == "GREEN") {
+
             }
-            else if(color=="PURPLE") {
-                moveBackward(0.9);
+            else if (color == "PURPLE") {
+
+              //  drive.followTrajectory(park2);
+
             }
-            else if(color=="ORANGE") {
-                strafeLeft(3.3);
-                moveBackward(0.65);
-                stop(1.0);
-            }
+            else if (color == "ORANGE") {
 
-            // Don't burn CPU cycles busy-looping in this sample
-            sleep(50);
+            }*/
         }
-    }
 
-    /** FUNCTIONS */
-
-    /** TIME-BASED */
-
-    public void moveForward(double time){
-        double run = (runtime.time()+time);
-        while(runtime.time() < run){
-            motorfrontLeft.setPower(0.25);
-            motorfrontRight.setPower(0.25);
-            motorbackLeft.setPower(0.25);
-            motorbackRight.setPower(0.25);
-        }
-    }
-
-    public void moveBackward(double time){
-        double run = (runtime.time()+time);
-        while(runtime.time() < run){
-            motorfrontLeft.setPower(-0.25);
-            motorfrontRight.setPower(-0.25);
-            motorbackLeft.setPower(-0.25);
-            motorbackRight.setPower(-0.25);
-        }
-    }
-
-    public void turnLeft(double time){
-        double run = (runtime.time()+time);
-        while(runtime.time() < run){
-            motorfrontLeft.setPower(-0.25);
-            motorfrontRight.setPower(0.25);
-            motorbackLeft.setPower(-0.25);
-            motorbackRight.setPower(0.25);
-        }
-    }
-
-    public void turnRight(double time){
-        double run = (runtime.time()+time);
-        while(runtime.time() < run){
-            motorfrontLeft.setPower(0.25);
-            motorfrontRight.setPower(-0.25);
-            motorbackLeft.setPower(0.25);
-            motorbackRight.setPower(-0.25);
-        }
-    }
-
-    public void strafeLeft(double time) {
-        double run = (runtime.time()+time);
-        while(runtime.time() < run){
-            motorfrontLeft.setPower(0.25);
-            motorfrontRight.setPower(-0.25);
-            motorbackLeft.setPower(-0.25);
-            motorbackRight.setPower(0.25);
-        }
-    }
-
-    public void strafeRight(double time){
-        double run = (runtime.time()+time);
-        while(runtime.time() < run){
-            motorfrontLeft.setPower(-0.25);
-            motorfrontRight.setPower(0.25);
-            motorbackLeft.setPower(0.25);
-            motorbackRight.setPower(-0.25);
-        }
     }
 
     public void moveForebar() {
         leftForebar.setPosition(0);
         rightForebar.setPosition(0);
+        forebarPos = 0;
     }
 
-    public void stop(double time){
+    public void keepForebar(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(0);
-            motorfrontRight.setPower(0);
-            motorbackLeft.setPower(0);
-            motorbackRight.setPower(0);
+            leftForebar.setPosition(forebarPos);
+            rightForebar.setPosition(forebarPos);
         }
     }
 
+    public void forebarIPos() {
+        leftForebar.setPosition(0.25);
+        rightForebar.setPosition(0.25);
+        forebarPos = 0.25;
+    }
+
+    public void forebarOPos() {
+        leftForebar.setPosition(0.89);
+        rightForebar.setPosition(0.89);
+        forebarPos = 0.89;
+    }
+
+    /*public void linkageIn(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftLinkage.setPosition(0);
+            rightLinkage.setPosition(0);
+        }
+    }
+
+    public void linkageOut(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftLinkage.setPosition(0.21);
+            rightLinkage.setPosition(0.21);
+        }
+    }
+
+    public void clawOpen() {
+        claw.setPosition(0.18);
+    }
+
+    public void clawClose() {
+        claw.setPosition(0);
+    }
+    */
+
+    public void stopSlides(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftSlide.setPower(0);
+            rightSlide.setPower(0);
+
+        }
+    }
+
+    public void intake(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            intake.setPower(-1);
+        }
+    }
+
+    public void outtake(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            intake.setPower(1);
+        }
+    }
+
+    public void stopIntake(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            intake.setPower(0);
+
+        }
+    }
+
+    /*public void liftOdo(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftOdo.setPower(0.02);
+            rightOdo.setPower(0.02);
+            frontOdo.setPower(0.02);
+        }
+    }
+
+    public void stopOdo(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftOdo.setPower(0);
+            rightOdo.setPower(0);
+            frontOdo.setPower(0);
+        }
+    }*/
+
+    public void moveArmUp(double pos) {
+        while(((-1*leftSlide.getCurrentPosition()) < pos) || ((-1*rightSlide.getCurrentPosition()) < pos)) {
+            leftSlide.setPower(1.0);
+            rightSlide.setPower(1.0);
+        }
+        stopSlides(0.1);
+        leftSlide.setPower(0.1);
+        rightSlide.setPower(0.1);
+    }
+
+    public void moveArmDown(double pos) {
+        while(((-1*leftSlide.getCurrentPosition()) > pos) || ((-1*rightSlide.getCurrentPosition()) > pos)) {
+            leftSlide.setPower(-1.0);
+            rightSlide.setPower(-1.0);
+        }
+        stopSlides(0.1);
+    }
+
+    public void initEncoder() {
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Status", "Resetting Encoders");
+        telemetry.update();
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // Send telemetry message to indicate successful Encoder reset
+        /*telemetry.addData("Path0",  "Starting at %7d :%7d :%7d :%7d",
+                leftSlide.getCurrentPosition(),
+                rightSlide.getCurrentPosition());
+        telemetry.update();*/
+    }
 
     public static class SkystoneDeterminationPipeline extends OpenCvPipeline
     {
@@ -529,4 +587,5 @@ public class BackwardsSensePark extends LinearOpMode {
             return Cb_val;
         }
     }
+
 }
