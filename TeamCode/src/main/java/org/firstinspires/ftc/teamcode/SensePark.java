@@ -47,8 +47,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * 100% accurate) method of detecting the skystone when lined up with
  * the sample regions over the first 3 stones.
  */
-@Autonomous
+
 @Disabled
+@Autonomous
 public class SensePark extends LinearOpMode {
 
     OpenCvWebcam webcam;

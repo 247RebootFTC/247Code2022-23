@@ -21,7 +21,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 //import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-@Disabled
 @TeleOp
 public class ServoTest extends LinearOpMode {
 
@@ -50,7 +49,7 @@ public class ServoTest extends LinearOpMode {
         //All motors are backwards except ones that are used
         while (opModeIsActive()) {
             if(gamepad1.a) {
-                leftLinkage.setPosition(0.0);
+                rightLinkage.setPosition(0.0);
                 rightLinkage.setPosition(0.0);
             }
             if(gamepad1.b) {

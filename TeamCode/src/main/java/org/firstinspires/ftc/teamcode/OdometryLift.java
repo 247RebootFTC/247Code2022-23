@@ -48,12 +48,12 @@ public class OdometryLift extends LinearOpMode {
 
             if (gamepad1.y) {
                 //liftOdo(0.25);
-                liftOdo(4.0);
+                liftOdo(2.5);
                 stopOdo(0.1);
             }
             else if (gamepad1.a) {
                 //unLiftOdo(0.25);
-                unLiftOdo(4.0);
+                unLiftOdo(2.5);
                 stopOdo(0.1);
             }
         }

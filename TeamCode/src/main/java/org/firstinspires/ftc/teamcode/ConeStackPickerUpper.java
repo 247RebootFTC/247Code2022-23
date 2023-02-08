@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -28,8 +28,8 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(group = "right")
-public class rightSideOdo extends LinearOpMode {
+@TeleOp
+public class ConeStackPickerUpper extends LinearOpMode {
 
     //Value of slides at high junction (use ArmReader)
     double SLIDES_HIGH = 2500;
@@ -37,7 +37,7 @@ public class rightSideOdo extends LinearOpMode {
     //Value of slides at intake height (use ArmReader)
     double SLIDES_INTAKE = 300;
 
-    double SLIDES_HOLD = SLIDES_INTAKE + 175;
+    double SLIDES_HOLD = SLIDES_INTAKE + 150;
 
     //Value of forebar at intake position (use ServoZeroer and trial and error the values)
     double FOREBAR_INTAKE = 0.8;
@@ -155,169 +155,11 @@ public class rightSideOdo extends LinearOpMode {
             }
         });
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        telemetry.addData(">", "DRAGON: FIIIIIIIIIIRE");
-        telemetry.update();
-
-        waitForStart();
-
-        String color;
-
-        //if (isStopRequested()) return;
-
-        if(opModeIsActive()) {
-
-
-            Trajectory traj = drive.trajectoryBuilder(new Pose2d(0, 0, Math.toRadians(0)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-48, 0, Math.toRadians(0)))
-                    .build();
-
-            Trajectory traj2 = drive.trajectoryBuilder(traj.end())
-                    .lineToLinearHeading(new Pose2d(-57, 0, Math.toRadians(78)))
-                    .build();
-
-            Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                    .back(7.5)
-                    .build();
-
-            Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(-57, 0, Math.toRadians(78)))
-                    .lineToLinearHeading(new Pose2d(-50.5, 0, Math.toRadians(89)))
-                    .build();
-
-            Trajectory traj5 = drive.trajectoryBuilder(traj4.end())
-                    .forward(25)
-                    .build();
-
-            Trajectory awayFromStack = drive.trajectoryBuilder(traj5.end())
-                    .back(25.5)
-                    .build();
-
-            Trajectory toJunction = drive.trajectoryBuilder(awayFromStack.end())
-                    .lineToLinearHeading(new Pose2d(-57, 0, Math.toRadians(78)))
-                    .build();
-
-            Trajectory traj6 = drive.trajectoryBuilder(new Pose2d(-49.5, -24, Math.toRadians(-90)), Math.toRadians(0))
-                    .splineToLinearHeading(new Pose2d(-43, -30, Math.toRadians(-45)), Math.toRadians(0))
-                    .build();
-
-            Trajectory traj7 = drive.trajectoryBuilder(new Pose2d(-43, -30, Math.toRadians(-45)), Math.toRadians(0))
-                    .splineToLinearHeading(new Pose2d(-50.5, -24, Math.toRadians(-91)), Math.toRadians(0))
-                    .build();
-
-            Trajectory park2 = drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-180)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-36, 0, Math.toRadians(-180)))
-                    .build();
-
-            Trajectory park1= drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-180)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-48, -24, Math.toRadians(-180)))
-                    .build();
-            Trajectory park1b= drive.trajectoryBuilder(new Pose2d(-48, -24, Math.toRadians(-180)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-36, -24, Math.toRadians(-180)))
-                    .build();
-
-            Trajectory park3= drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-180)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-48, 24, Math.toRadians(-180)))
-                    .build();
-
-            Trajectory park3b= drive.trajectoryBuilder(new Pose2d(-48, 24, Math.toRadians(-180)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-36, 24, Math.toRadians(-180)))
-                    .build();
-
-            clawOpen(0.01);
-            intake(0.1);
-            move4bar(.46, 0.65);
-            forebarOPos(0.01);
-            linkageIn(0.01);
-
-            drive.followTrajectory(traj);
-
-            move4bar(0, 0.3);
-
-            color = pipeline.getAnalysis();
-            telemetry.addData("Analysis", color);
-            telemetry.update();
-
-            drive.followTrajectory(traj2);
-
-            //moveArmUp(SLIDES_HIGH+190, 1.0);
-
-            //drive.followTrajectory(traj3);
-
-            /*outtake(0.1);
-            stopIntake(1.0);
-            forebarIPos(0.1);
-            moveArmDown(SLIDES_HOLD+50, 1.0);
-            holdArm();*/
-
-            drive.followTrajectory(traj4);
-
-            drive.followTrajectory(traj5);
-
-            forebarPos(0.5, 0.20);
-            moveArmUp(300, 1.0);
-
-            drive.followTrajectory(awayFromStack);
-
-            drive.followTrajectory(toJunction);
-
-            //cycle(0.37);
-
-            /*move4bar(.365, 0.01);
-            linkageOut(.22, 1);
-            clawClose(0.5);
-            linkageOut(0.36, 0.025);
-            move4bar(0.1, 1);
-            linkageIn(0.01);
-            move4bar(0, 0.01);
-
-
-            drive.followTrajectory(traj5);
-
-            intake(0.1);
-            moveArmDown(SLIDES_INTAKE, 1.0);
-            holdSlides(0.5);
-            clawOpen(0.01);
-            moveArmUp(SLIDES_HIGH, 1.0);
-
-            drive.followTrajectory(traj6);
-
-            forebarOPos(0.3);
-            outtake(0.1);
-            stopIntake(0.01);
-            forebarIPos(0.1);
-            moveArmDown(SLIDES_HOLD, 1.0);
-
-            drive.followTrajectory(traj7);*/
-
-            //moveArmDown(SLIDES_HIGH, 1.0);
-            //forebarOPos(1.0);
-            //outtake(0.1);
-
-
-
-
-
-            //drive.followTrajectory(traj4);
-            //drive.followTrajectory(park3);
-            //drive.followTrajectory(park3b);
-
-
-       /*     if (color == "GREEN") {
-
-                drive.followTrajectory(park1);
-
+        while(opModeIsActive()) {
+            if(gamepad1.a) {
+                triumvirate(0.34);
             }
-            else if (color == "PURPLE") {
-
-                drive.followTrajectory(park2);
-
-            }
-            else if (color == "ORANGE") {
-
-                drive.followTrajectory(park3);
-
-            }*/
         }
 
     }
@@ -325,8 +167,8 @@ public class rightSideOdo extends LinearOpMode {
     public void linkageIn(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            leftLinkage.setPosition(0);
-            rightLinkage.setPosition(0);
+            leftLinkage.setPosition(0.05);
+            rightLinkage.setPosition(0.05);
         }
     }
 
@@ -341,8 +183,8 @@ public class rightSideOdo extends LinearOpMode {
     public void move4bar(double pos, double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            left4bar.setPosition(pos);
-            right4bar.setPosition(pos-0.01);
+            left4bar.setPosition(pos-0.025);
+            right4bar.setPosition(pos);;
         }
     }
 
@@ -354,27 +196,19 @@ public class rightSideOdo extends LinearOpMode {
         }
     }
 
-    public void forebarPos(double time, double pos) {
-        double run = (runtime.time()+time);
-        while(runtime.time() < run){
-            leftForebar.setPosition(pos);
-            rightForebar.setPosition(pos + 0.075);
-        }
-    }
-
     public void forebarHold(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
             leftForebar.setPosition(.7);
-            rightForebar.setPosition(.7+0.075);
+            rightForebar.setPosition(.675);
         }
     }
 
     public void forebarOPos(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            leftForebar.setPosition(FOREBAR_OUTTAKE);
-            rightForebar.setPosition(FOREBAR_OUTTAKE+0.075);
+            leftForebar.setPosition(FOREBAR_OUTTAKE+0.025);
+            rightForebar.setPosition(FOREBAR_OUTTAKE);
         }
     }
 
@@ -492,13 +326,32 @@ public class rightSideOdo extends LinearOpMode {
         linkageIn(0.35);
     }
 
-    public void cycle(double fourbarPos) {
+    public void triumvirate(double fourbarPos) {
         //Intake
-        linkageOut(0.215, 0.001);
-        move4bar(0.37, 0.5);
-        clawClose(0.1);
-        linkageOut(0.36, 0.05);
-        move4bar(0.10, 0.01);
+        forebarIPos(0.0000001);
+        intake(0.1);
+        moveArmDown(SLIDES_INTAKE, 1.0);
+        holdSlides(0.5);
+        clawOpen(0.01);
+
+        //Slides go high + outtake
+        moveArmUp(SLIDES_HIGH, 1.0);
+        forebarOPos(1.0);
+        outtake(0.5);
+        stopIntake(0.01);
+
+        //move odo
+
+        //Pick up cone
+        forebarIPos(0.01);
+        move4bar(fourbarPos, 0.01);
+        linkageOut(LINKAGE_OUT_POS, 0.5);
+        clawClose(0.2);
+        linkageOut(LINKAGE_UP_POS, 0.05);
+        move4bar(fourbarPos-0.24, 0.000001);
+        startArmDown(0.3);
+        move4bar(0, 0.01);
+        linkageIn(0.01);
     }
 
     public void initEncoder() {

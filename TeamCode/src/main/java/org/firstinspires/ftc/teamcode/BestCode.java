@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-//@Disabled
+@Disabled
 @TeleOp
 public class BestCode extends LinearOpMode {
 

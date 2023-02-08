@@ -22,6 +22,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -46,6 +47,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * 100% accurate) method of detecting the skystone when lined up with
  * the sample regions over the first 3 stones.
  */
+
+@Disabled
 @Autonomous
 public class BackwardsSensePark extends LinearOpMode {
 
@@ -178,9 +181,8 @@ public class BackwardsSensePark extends LinearOpMode {
             telemetry.addData("Cr Value:", pipeline.getCr());
             telemetry.update();*/
 
-            moveForebar();
 
-            moveBackward(1.9);
+            moveBackward(1.5);
 
             color = pipeline.getAnalysis();
 
@@ -189,9 +191,9 @@ public class BackwardsSensePark extends LinearOpMode {
 
             stop(1.0);
 
-            moveBackward(0.5);
+            moveBackward(0.9);
             stop(0.5);
-            moveForward(0.5);
+            moveForward(0.7);
             stop(0.5);
 
             if(color=="GREEN") {
@@ -208,6 +210,8 @@ public class BackwardsSensePark extends LinearOpMode {
                 moveBackward(0.65);
                 stop(1.0);
             }
+
+            moveForebar();
 
             // Don't burn CPU cycles busy-looping in this sample
             sleep(50);
@@ -279,8 +283,8 @@ public class BackwardsSensePark extends LinearOpMode {
     }
 
     public void moveForebar() {
-        leftForebar.setPosition(0);
-        rightForebar.setPosition(0);
+        leftForebar.setPosition(0.8);
+        rightForebar.setPosition(0.8);
     }
 
     public void stop(double time){

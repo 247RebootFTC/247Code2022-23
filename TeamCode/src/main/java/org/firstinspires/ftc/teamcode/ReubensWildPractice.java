@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 //import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+@Disabled
 @TeleOp (name="Reuben's Wild Practice")
 public class ReubensWildPractice extends LinearOpMode {
 

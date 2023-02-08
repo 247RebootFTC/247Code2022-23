@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -19,9 +19,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-
-@TeleOp
-public class LinkageTest extends LinearOpMode {
+@Disabled
+@Autonomous
+public class Fourbar extends LinearOpMode {
     private Servo rightLinkage;
     private Servo leftLinkage;
     private Servo leftForebar;
@@ -29,7 +29,6 @@ public class LinkageTest extends LinearOpMode {
     private Servo left4bar;
     private Servo right4bar;
     private Servo claw;
-    private CRServo intake;
 
     //Time Variable
     private ElapsedTime runtime = new ElapsedTime();
@@ -80,33 +79,17 @@ public class LinkageTest extends LinearOpMode {
         leftForebar.setDirection(Servo.Direction.FORWARD);
         rightForebar.setDirection(Servo.Direction.REVERSE);
 
-        left4bar.setDirection(Servo.Direction.REVERSE);
-        right4bar.setDirection(Servo.Direction.FORWARD);
-
-        intake = hardwareMap.crservo.get("intake");
+        left4bar.setDirection(Servo.Direction.FORWARD);
+        right4bar.setDirection(Servo.Direction.REVERSE);
 
         //Wait to start code
         waitForStart();
 
         // Repeatedly run code in here until stop button is pressed
         //All motors are backwards except ones that are used
-        while (opModeIsActive()) {
-            if(gamepad1.a) {
-                leftForebar.setPosition(0.20);
-                rightForebar.setPosition(0.20 + 0.075);
-            }
-            else if(gamepad1.y) {
-                leftForebar.setPosition(0.18);
-                rightForebar.setPosition(0.18 + 0.075);
-            }
-            else if(gamepad1.y) {
-                leftForebar.setPosition(0.15);
-                rightForebar.setPosition(0.15 + 0.075);
-            }
-
-            if(gamepad1.b) {
-                intake.setPower(-1.0);
-            }
+        if (opModeIsActive()) {
+            leftLinkage.setPosition(0);
+            rightLinkage.setPosition(0);
 
 
         }
