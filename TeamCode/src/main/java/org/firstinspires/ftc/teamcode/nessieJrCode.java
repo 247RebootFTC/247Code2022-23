@@ -20,10 +20,10 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 public class nessieJrCode extends LinearOpMode {
 
     //declare Drive Motors
-    private DcMotor motorfrontLeft;
-    private DcMotor motorfrontRight;
-    private DcMotor motorbackLeft;
-    private DcMotor motorbackRight;
+    private DcMotor motorFrontLeft;
+    private DcMotor motorFrontRight;
+    private DcMotor motorBackLeft;
+    private DcMotor motorBackRight;
 
     //Time Variable
     private ElapsedTime runtime = new ElapsedTime();
@@ -33,36 +33,31 @@ public class nessieJrCode extends LinearOpMode {
     double RF;
     double LB;
     double RB;
-    double pwr = 3;
 
     //Joystick position variables
     double X1;
     double Y1;
     double X2;
     double Y2;
-    double iX1;
-    double iY1;
-    double iX2;
-    double iY2;
 
     //analog values
-    double joyScale = 0.6;
-    double joyScale2 = 0.6;
+    double joyScale = 0.8;
+    double joyScale2 = 0.8;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         // Initialize Drive Motors
-        motorfrontLeft = hardwareMap.dcMotor.get("motorfrontLeft");
-        motorfrontRight = hardwareMap.dcMotor.get("motorfrontRight");
-        motorbackLeft = hardwareMap.dcMotor.get("motorbackLeft");
-        motorbackRight = hardwareMap.dcMotor.get("motorbackRight");
+        motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
+        motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
+        motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
+        motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
 
         //Initialize Drive Motors' Directions
-        motorfrontLeft.setDirection(DcMotor.Direction.FORWARD);
-        motorfrontRight.setDirection(DcMotor.Direction.REVERSE);
-        motorbackLeft.setDirection(DcMotor.Direction.FORWARD);
-        motorbackRight.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontLeft.setDirection(DcMotor.Direction.FORWARD);
+        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorBackLeft.setDirection(DcMotor.Direction.FORWARD);
+        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
 
         telemetry.addData("DRAGON: ", "I am in super duper extremely extreme agony extreme");
         telemetry.update();
@@ -93,23 +88,23 @@ public class nessieJrCode extends LinearOpMode {
             RB += Y2;
 
             //Strafing
-            LF += X2;
-            RF -= X2;
-            LB -= X2;
-            RB += X2;
+            LF -= X2;
+            RF += X2;
+            LB += X2;
+            RB -= X2;
 
             //Turning
-            LF += X1;
-            RF -= X1;
-            LB += X1;
-            RB -= X1;
+            LF -= X1;
+            RF += X1;
+            LB -= X1;
+            RB += X1;
 
 
             //Set Motors
-            motorfrontLeft.setPower(LF);
-            motorfrontRight.setPower(RF);
-            motorbackLeft.setPower(LB);
-            motorbackRight.setPower(RB);
+            motorFrontLeft.setPower(LF);
+            motorFrontRight.setPower(RF);
+            motorBackLeft.setPower(LB);
+            motorBackRight.setPower(RB);
         }
     }
 }
