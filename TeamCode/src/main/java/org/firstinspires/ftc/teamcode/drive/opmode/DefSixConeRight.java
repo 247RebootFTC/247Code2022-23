@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.Servo.Direction;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -23,16 +25,14 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
 /*
  * This is an example of a more complex path to really test the tuning.
  */
 @Autonomous(group = "right")
-public class rightSideOdo extends LinearOpMode {
+public class DefSixConeRight extends LinearOpMode {
 
     //Value of slides at high junction (use ArmReader)
-    double SLIDES_HIGH = 2500;
+    double SLIDES_HIGH = 2200;
 
     //Value of slides at intake height (use ArmReader)
     double SLIDES_INTAKE = 300;
@@ -40,13 +40,13 @@ public class rightSideOdo extends LinearOpMode {
     double SLIDES_HOLD = SLIDES_INTAKE + 175;
 
     //Value of forebar at intake position (use ServoZeroer and trial and error the values)
-    double FOREBAR_INTAKE = 0.8;
+    double FOREBAR_INTAKE = 0.4;
 
     //Value of forebar at outtake position (use ServoZeroer and trial and error the values)
     double FOREBAR_OUTTAKE = 0.3;
 
     //Value of clawbar at cone grabbing position (use LinkageTest to find trial and error the values)
-    double CLAWBAR_GRAB_POS = 0.72;
+    double CLAWBAR_GRAB_POS = 0.63;
 
     double LINKAGE_OUT_POS = 0.28;
 
@@ -107,14 +107,14 @@ public class rightSideOdo extends LinearOpMode {
         rightSlide.setDirection(DcMotor.Direction.REVERSE);
 
         //Initialize Servos' Directions
-        leftLinkage.setDirection(Servo.Direction.REVERSE);
-        rightLinkage.setDirection(Servo.Direction.FORWARD);
+        leftLinkage.setDirection(Direction.REVERSE);
+        rightLinkage.setDirection(Direction.FORWARD);
 
-        leftForebar.setDirection(Servo.Direction.FORWARD);
-        rightForebar.setDirection(Servo.Direction.REVERSE);
+        leftForebar.setDirection(Direction.FORWARD);
+        rightForebar.setDirection(Direction.REVERSE);
 
-        left4bar.setDirection(Servo.Direction.REVERSE);
-        right4bar.setDirection(Servo.Direction.FORWARD);
+        left4bar.setDirection(Direction.REVERSE);
+        right4bar.setDirection(Direction.FORWARD);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -174,27 +174,31 @@ public class rightSideOdo extends LinearOpMode {
                     .build();
 
             Trajectory traj2 = drive.trajectoryBuilder(traj.end())
-                    .lineToLinearHeading(new Pose2d(-57, 0, Math.toRadians(78)))
+                    .lineToLinearHeading(new Pose2d(-57, 0, Math.toRadians(65)))
                     .build();
 
             Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                    .back(7.5)
+                    .back(5.5)
                     .build();
 
-            Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(-57, 0, Math.toRadians(78)))
-                    .lineToLinearHeading(new Pose2d(-50.5, 0, Math.toRadians(89)))
+            Trajectory traj4 = drive.trajectoryBuilder(traj2.end())
+                    .lineToLinearHeading(new Pose2d(-49.5, 0, Math.toRadians(90)))
                     .build();
 
             Trajectory traj5 = drive.trajectoryBuilder(traj4.end())
-                    .forward(25)
+                    .forward(25.25)
                     .build();
 
             Trajectory awayFromStack = drive.trajectoryBuilder(traj5.end())
-                    .back(25.5)
+                    .back(25.25)
                     .build();
 
             Trajectory toJunction = drive.trajectoryBuilder(awayFromStack.end())
-                    .lineToLinearHeading(new Pose2d(-57, 0, Math.toRadians(78)))
+                    .lineToLinearHeading(new Pose2d(-57, 0, Math.toRadians(65)))
+                    .build();
+
+            Trajectory closeJunc = drive.trajectoryBuilder(toJunction.end())
+                    .back(5)
                     .build();
 
             Trajectory traj6 = drive.trajectoryBuilder(new Pose2d(-49.5, -24, Math.toRadians(-90)), Math.toRadians(0))
@@ -202,7 +206,7 @@ public class rightSideOdo extends LinearOpMode {
                     .build();
 
             Trajectory traj7 = drive.trajectoryBuilder(new Pose2d(-43, -30, Math.toRadians(-45)), Math.toRadians(0))
-                    .splineToLinearHeading(new Pose2d(-50.5, -24, Math.toRadians(-91)), Math.toRadians(0))
+                    .splineToLinearHeading(new Pose2d(-50.5, -24, Math.toRadians(-90)), Math.toRadians(0))
                     .build();
 
             Trajectory park2 = drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-180)), Math.toRadians(0))
@@ -224,15 +228,19 @@ public class rightSideOdo extends LinearOpMode {
                     .lineToLinearHeading(new Pose2d(-36, 24, Math.toRadians(-180)))
                     .build();
 
+            //Get robot ready
+            intake(0.25);
             clawOpen(0.01);
-            intake(0.1);
-            move4bar(.46, 0.65);
+            move4bar(0.61, 0.65);
             forebarOPos(0.01);
             linkageIn(0.01);
 
+            //Drive while pushing cone
             drive.followTrajectory(traj);
 
-            move4bar(0, 0.3);
+            linkageOut(0.15, 0.1);
+            linkageIn(0.1);
+            move4bar(0, 0.5);
 
             color = pipeline.getAnalysis();
             telemetry.addData("Analysis", color);
@@ -240,26 +248,44 @@ public class rightSideOdo extends LinearOpMode {
 
             drive.followTrajectory(traj2);
 
-            //moveArmUp(SLIDES_HIGH+190, 1.0);
+            moveArmUp(SLIDES_HIGH+150, 1.0);
 
-            //drive.followTrajectory(traj3);
+            drive.followTrajectory(traj3);
 
-            /*outtake(0.1);
-            stopIntake(1.0);
-            forebarIPos(0.1);
-            moveArmDown(SLIDES_HOLD+50, 1.0);
-            holdArm();*/
+            //Score Preload
+            forebarPos(0.75, 0.8);
+            outtake(0.1);
+            stopIntake(0.1);
+            forebarPos(0.15, 0.25);
+            moveArmDown(250, 1.0);
+            holdArm();
 
+            //Pick up cone1
             drive.followTrajectory(traj4);
-
             drive.followTrajectory(traj5);
 
-            forebarPos(0.5, 0.20);
-            moveArmUp(300, 1.0);
+            moveArmDown(SLIDES_INTAKE-100, 1.0);
+            forebarPos(2, 0.1);
+            intake(1.0);
+            moveArmUp(SLIDES_HOLD+150, 1.0);
+            intake(1);
 
             drive.followTrajectory(awayFromStack);
 
+            moveArmUp(SLIDES_HIGH+150, 1.0);
+
             drive.followTrajectory(toJunction);
+            drive.followTrajectory(closeJunc);
+
+            //Score cone1
+            forebarPos(1.25, 0.8);
+            outtake(0.1);
+            stopIntake(0.1);
+            forebarPos(0.5, 0.1);
+            moveArmDown(0, 1.0);
+            holdArm();
+
+            drive.followTrajectory(traj4);
 
             //cycle(0.37);
 
@@ -303,9 +329,10 @@ public class rightSideOdo extends LinearOpMode {
             //drive.followTrajectory(park3b);
 
 
-       /*     if (color == "GREEN") {
+            if (color == "GREEN") {
 
                 drive.followTrajectory(park1);
+                drive.followTrajectory(park1b);
 
             }
             else if (color == "PURPLE") {
@@ -316,8 +343,9 @@ public class rightSideOdo extends LinearOpMode {
             else if (color == "ORANGE") {
 
                 drive.followTrajectory(park3);
+                drive.followTrajectory(park3b);
 
-            }*/
+            }
         }
 
     }
@@ -342,7 +370,7 @@ public class rightSideOdo extends LinearOpMode {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
             left4bar.setPosition(pos);
-            right4bar.setPosition(pos-0.01);
+            right4bar.setPosition(pos);
         }
     }
 
@@ -350,7 +378,7 @@ public class rightSideOdo extends LinearOpMode {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
             leftForebar.setPosition(FOREBAR_INTAKE);
-            rightForebar.setPosition(FOREBAR_INTAKE);
+            rightForebar.setPosition(FOREBAR_INTAKE+0.075);
         }
     }
 
@@ -506,14 +534,14 @@ public class rightSideOdo extends LinearOpMode {
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
 
-        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftSlide.setMode(RunMode.RUN_USING_ENCODER);
+        rightSlide.setMode(RunMode.RUN_USING_ENCODER);
 
-        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(RunMode.STOP_AND_RESET_ENCODER);
 
-        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftSlide.setMode(RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(RunMode.RUN_WITHOUT_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
         /*telemetry.addData("Path0",  "Starting at %7d :%7d :%7d :%7d",

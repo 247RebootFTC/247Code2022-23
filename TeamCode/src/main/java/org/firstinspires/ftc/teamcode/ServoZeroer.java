@@ -109,7 +109,7 @@ public class ServoZeroer extends LinearOpMode {
             if(gamepad1.b) {//O button
                 leftLinkage.setPosition(0);
                 rightLinkage.setPosition(0);
-                left4bar.setPosition(0.01);
+                left4bar.setPosition(0);
                 right4bar.setPosition(0);
             }
 

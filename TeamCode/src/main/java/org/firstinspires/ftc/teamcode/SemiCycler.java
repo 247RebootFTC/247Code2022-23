@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 //@Disabled
 @TeleOp
-public class SuperCycler extends LinearOpMode {
+public class SemiCycler extends LinearOpMode {
 
     //Value of slides at high junction (use ArmReader)
     double SLIDES_HIGH = 2200;
@@ -55,6 +55,12 @@ public class SuperCycler extends LinearOpMode {
     boolean moveUp = false;
     boolean moveDown = false;
     double pos = 0;
+
+    //0 = cycle
+    //1 = opposite of cycle
+    int mode = 0;
+    boolean modeBeg = false;
+    boolean disableMode = false;
 
     //double forebarPos;
     boolean forebarIntake = true;
@@ -238,192 +244,225 @@ public class SuperCycler extends LinearOpMode {
                 stopOdo(0.1);
             }
 
-            if (gamepad2.y) {
-                startCycle();
-            }
-            else if (gamepad2.b) {
-                triumvirate();
-            }
+            if(mode==0) {
 
-            if (gamepad1.a) {
-                if(!claw4bar) {
-                    clawOpen(0.1);
-                    move4bar(CLAWBAR_GRAB_POS, 0.1);
-                    linkageIn(0.1);
-                    claw4bar = true;
+                if (gamepad2.y) {
+                    disableMode = false;
+                    startCycle();
                 }
-                else if(claw4bar) {
-                    clawClose(0.1);
-                    linkageIn(0.1);
-                    move4bar(0, 0.1);
-                    claw4bar = false;
-                }
-            }
-
-            if(gamepad2.a) {
-                leftForebar.setPosition(0.2);
-                rightForebar.setPosition(0.2 + 0.065);
-            }
-
-            if(gamepad2.right_stick_y < 0) {
-                linkagePosition = linkagePosition + 0.01;
-
-                if(linkagePosition > 1.0) {
-                    leftLinkage.setPosition(1.0);
-                    rightLinkage.setPosition(1.0);
-
-                    linkagePosition = 1.0;
-                }
-                else {
-                    leftLinkage.setPosition(linkagePosition + 0.01);
-                    rightLinkage.setPosition(linkagePosition + 0.01);
+                else if (gamepad2.b) {
+                    disableMode = false;
+                    triumvirate();
                 }
 
-            }
-            else if(gamepad2.right_stick_y > 0) {
-                linkagePosition = linkagePosition - 0.01;
-
-                if(linkagePosition < 0) {
-                    leftLinkage.setPosition(0);
-                    rightLinkage.setPosition(0);
-
-                    linkagePosition = 0;
+                if((gamepad2.right_trigger > 0.2)&&(!disableMode)) {
+                    mode = 1;
+                    disableMode = true;
                 }
-                else {
-                    leftLinkage.setPosition(linkagePosition - 0.01);
-                    rightLinkage.setPosition(linkagePosition - 0.01);
+            }
+            else if(mode==1) {
+
+                if((gamepad2.right_trigger > 0.2)&&(!disableMode)) {
+                    mode = 0;
+                    modeBeg = true;
+                    disableMode = true;
                 }
 
-            }
+                if (gamepad1.a) {
+                    disableMode = false;
+                    if(!claw4bar) {
+                        clawOpen(0.1);
+                        move4bar(CLAWBAR_GRAB_POS, 0.1);
+                        linkageIn(0.1);
+                        claw4bar = true;
+                    }
+                    else if(claw4bar) {
+                        clawClose(0.1);
+                        linkageIn(0.1);
+                        move4bar(0, 0.1);
+                        claw4bar = false;
+                    }
+                }
+
+                if(gamepad2.a) {
+                    disableMode = false;
+                    leftForebar.setPosition(0.2);
+                    rightForebar.setPosition(0.2 + 0.065);
+                }
+
+                if(gamepad2.right_stick_y < 0) {
+                    disableMode = false;
+                    linkagePosition = linkagePosition + 0.01;
+
+                    if(linkagePosition > 1.0) {
+                        leftLinkage.setPosition(1.0);
+                        rightLinkage.setPosition(1.0);
+
+                        linkagePosition = 1.0;
+                    }
+                    else {
+                        leftLinkage.setPosition(linkagePosition + 0.01);
+                        rightLinkage.setPosition(linkagePosition + 0.01);
+                    }
+
+                }
+                else if(gamepad2.right_stick_y > 0) {
+                    disableMode = false;
+                    linkagePosition = linkagePosition - 0.01;
+
+                    if(linkagePosition < 0) {
+                        leftLinkage.setPosition(0);
+                        rightLinkage.setPosition(0);
+
+                        linkagePosition = 0;
+                    }
+                    else {
+                        leftLinkage.setPosition(linkagePosition - 0.01);
+                        rightLinkage.setPosition(linkagePosition - 0.01);
+                    }
+
+                }
 
 
-            if (gamepad2.right_bumper) {
-                intake.setPower(-1);
-            }
-            else if (gamepad2.left_bumper) {
-                intake.setPower(1);
-            }
-            else if (gamepad2.left_trigger > 0.2) {
-                intake.setPower(0);
-            }
-            else if (gamepad2.right_trigger > 0.2) {
-                intake.setPower(0);
-            }
+                if (gamepad2.right_bumper) {
+                    disableMode = false;
+                    intake.setPower(-1);
+                }
+                else if (gamepad2.left_bumper) {
+                    disableMode = false;
+                    intake.setPower(1);
+                }
+                else if (gamepad2.left_trigger > 0.2) {
+                    disableMode = false;
+                    intake.setPower(0);
+                }
+                else if (gamepad2.right_trigger > 0.2) {
+                    disableMode = false;
+                    intake.setPower(0);
+                }
 
 
-            if(moveUp) {
-                if(((-1*leftSlide.getCurrentPosition()) >= pos) || ((-1*rightSlide.getCurrentPosition()) >= pos)) {
+                if(moveUp) {
+                    if(((-1*leftSlide.getCurrentPosition()) >= pos) || ((-1*rightSlide.getCurrentPosition()) >= pos)) {
+                        moveUp = false;
+                        holdUp = true;
+                        leftSlide.setPower(0.1);
+                        rightSlide.setPower(0.1);
+                        telemetry.addLine("MOVE UP FALSE");
+                        telemetry.update();
+                    }
+                    else {
+                        leftSlide.setPower(1.0);
+                        rightSlide.setPower(1.0);
+                        telemetry.addLine("MOVE UP TRUE");
+                        telemetry.update();
+                    }
+                }
+                else if(moveDown) {
+                    if(((-1*leftSlide.getCurrentPosition()) <= pos) || ((-1*rightSlide.getCurrentPosition()) <= pos)) {
+                        moveDown = false;
+                        holdUp = true;
+                        leftSlide.setPower(0.1);
+                        rightSlide.setPower(0.1);
+                        telemetry.addLine("MOVE DOWN FALSE");
+                        telemetry.update();
+                    }
+                    else {
+                        leftSlide.setPower(-1.0);
+                        rightSlide.setPower(-1.0);
+                        telemetry.addLine("MOVE DOWN TRUE");
+                        telemetry.update();
+                    }
+                }
+                else if (gamepad2.left_stick_y < 0.0) {
+                    disableMode = false;
+                    holdUp = false;
                     moveUp = false;
-                    holdUp = true;
-                    leftSlide.setPower(0.1);
-                    rightSlide.setPower(0.1);
-                    telemetry.addLine("MOVE UP FALSE");
-                    telemetry.update();
-                }
-                else {
-                    leftSlide.setPower(1.0);
-                    rightSlide.setPower(1.0);
-                    telemetry.addLine("MOVE UP TRUE");
-                    telemetry.update();
-                }
-            }
-            else if(moveDown) {
-                if(((-1*leftSlide.getCurrentPosition()) <= pos) || ((-1*rightSlide.getCurrentPosition()) <= pos)) {
                     moveDown = false;
-                    holdUp = true;
-                    leftSlide.setPower(0.1);
-                    rightSlide.setPower(0.1);
-                    telemetry.addLine("MOVE DOWN FALSE");
+                    leftSlide.setPower(-0.5*gamepad2.left_stick_y);
+                    rightSlide.setPower(-0.5*gamepad2.left_stick_y);
+                }
+                else if (gamepad2.left_stick_y > 0.0) {
+                    disableMode = false;
+                    holdUp = false;
+                    moveUp = false;
+                    moveDown = false;
+                    leftSlide.setPower(-0.5*gamepad2.left_stick_y);
+                    rightSlide.setPower(-0.5*gamepad2.left_stick_y);
+                }
+                else if(gamepad2.dpad_up) {
+                    disableMode = false;
+                    //High Junction
+                    holdUp = false;
+                    moveUp = false;
+                    moveDown = false;
+                    pos = SLIDES_HIGH+100;
+                    clawOpen(0.01);
+                    moveArm();
+                }
+                else if(gamepad2.dpad_right) {
+                    disableMode = false;
+                    //Middle Junction
+                    holdUp = false;
+                    moveUp = false;
+                    moveDown = false;
+                    pos = SLIDES_MID;
+                    clawOpen(0.01);
+                    moveArm();
+                }
+                else if(gamepad2.dpad_down) {
+                    disableMode = false;
+                    //Low Junction
+                    holdUp = false;
+                    moveUp = false;
+                    moveDown = false;
+                    pos = SLIDES_LOW;
+                    clawOpen(0.01);
+                    moveArm();
+                }
+                else if(gamepad2.dpad_left) {
+                    disableMode = false;
+                    telemetry.addLine("IN DPAD LEFT IF STATEMENT");
+                    telemetry.update();
+                    //Intake Height
+                    holdUp = false;
+                    moveUp = false;
+                    moveDown = false;
+                    pos = SLIDES_INTAKE;
+                    clawClose(0.01);
+                    moveArm();
+                }
+                else if(holdUp) {
+                    moveUp = false;
+                    moveDown = false;
+                    leftSlide.setPower(0.07);
+                    rightSlide.setPower(0.07);
+                    telemetry.addLine("HOLD UP FUNCTION");
                     telemetry.update();
                 }
                 else {
-                    leftSlide.setPower(-1.0);
-                    rightSlide.setPower(-1.0);
-                    telemetry.addLine("MOVE DOWN TRUE");
-                    telemetry.update();
-                }
-            }
-            else if (gamepad2.left_stick_y < 0.0) {
-                holdUp = false;
-                moveUp = false;
-                moveDown = false;
-                leftSlide.setPower(-0.5*gamepad2.left_stick_y);
-                rightSlide.setPower(-0.5*gamepad2.left_stick_y);
-            }
-            else if (gamepad2.left_stick_y > 0.0) {
-                holdUp = false;
-                moveUp = false;
-                moveDown = false;
-                leftSlide.setPower(-0.5*gamepad2.left_stick_y);
-                rightSlide.setPower(-0.5*gamepad2.left_stick_y);
-            }
-            else if(gamepad2.dpad_up) {
-                //High Junction
-                holdUp = false;
-                moveUp = false;
-                moveDown = false;
-                pos = SLIDES_HIGH+100;
-                clawOpen(0.01);
-                moveArm();
-            }
-            else if(gamepad2.dpad_right) {
-                //Middle Junction
-                holdUp = false;
-                moveUp = false;
-                moveDown = false;
-                pos = SLIDES_MID;
-                clawOpen(0.01);
-                moveArm();
-            }
-            else if(gamepad2.dpad_down) {
-                //Low Junction
-                holdUp = false;
-                moveUp = false;
-                moveDown = false;
-                pos = SLIDES_LOW;
-                clawOpen(0.01);
-                moveArm();
-            }
-            else if(gamepad2.dpad_left) {
-                telemetry.addLine("IN DPAD LEFT IF STATEMENT");
-                telemetry.update();
-                //Intake Height
-                holdUp = false;
-                moveUp = false;
-                moveDown = false;
-                pos = SLIDES_INTAKE;
-                clawClose(0.01);
-                moveArm();
-            }
-            else if(holdUp) {
-                moveUp = false;
-                moveDown = false;
-                leftSlide.setPower(0.07);
-                rightSlide.setPower(0.07);
-                telemetry.addLine("HOLD UP FUNCTION");
-                telemetry.update();
-            }
-            else {
-                moveUp = false;
-                moveDown = false;
-                leftSlide.setPower(0);
-                rightSlide.setPower(0);
-            }
-
-            if (gamepad2.x) {
-                if(forebarIntake) {
-                    leftForebar.setPosition(FOREBAR_OUTTAKE);
-                    rightForebar.setPosition(FOREBAR_OUTTAKE + 0.065);
-                    forebarIntake = false;
-                    keepForebarO(1.0);
-                }
-                else if(!forebarIntake) {
-                    leftForebar.setPosition(FOREBAR_INTAKE);
-                    rightForebar.setPosition(FOREBAR_INTAKE + 0.065);
-                    forebarIntake = true;
-                    keepForebarI(1.0);
+                    moveUp = false;
+                    moveDown = false;
+                    leftSlide.setPower(0);
+                    rightSlide.setPower(0);
                 }
 
+                if (gamepad2.x) {
+                    disableMode = false;
+                    if(forebarIntake) {
+                        leftForebar.setPosition(FOREBAR_OUTTAKE);
+                        rightForebar.setPosition(FOREBAR_OUTTAKE + 0.065);
+                        forebarIntake = false;
+                        keepForebarO(1.0);
+                    }
+                    else if(!forebarIntake) {
+                        leftForebar.setPosition(FOREBAR_INTAKE);
+                        rightForebar.setPosition(FOREBAR_INTAKE + 0.065);
+                        forebarIntake = true;
+                        keepForebarI(1.0);
+                    }
+
+                }
             }
         }
     }

@@ -92,19 +92,19 @@ public class LinkageTest extends LinearOpMode {
         //All motors are backwards except ones that are used
         while (opModeIsActive()) {
             if(gamepad1.a) {
-                leftForebar.setPosition(0.20);
-                rightForebar.setPosition(0.20 + 0.075);
+                leftForebar.setPosition(0.4);
+                rightForebar.setPosition(0.4 + 0.075);
             }
             else if(gamepad1.y) {
-                leftForebar.setPosition(0.18);
-                rightForebar.setPosition(0.18 + 0.075);
+                leftForebar.setPosition(0.5);
+                rightForebar.setPosition(0.5 + 0.075);
             }
-            else if(gamepad1.y) {
-                leftForebar.setPosition(0.15);
-                rightForebar.setPosition(0.15 + 0.075);
+            else if(gamepad1.b) {
+                leftForebar.setPosition(0.45);
+                rightForebar.setPosition(0.45 + 0.075);
             }
 
-            if(gamepad1.b) {
+            if(gamepad1.x) {
                 intake.setPower(-1.0);
             }
 
