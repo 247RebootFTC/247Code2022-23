@@ -3,6 +3,9 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.7">
       <module name="FtcRobotController-master.FtcRobotController" target="11" />
+      <module name="FtcRobotController-master.MeepMeepImASheep" target="1.8" />
+      <module name="FtcRobotController-master.MeepMeepImASheep.main" target="1.8" />
+      <module name="FtcRobotController-master.MeepMeepImASheep.test" target="1.8" />
       <module name="FtcRobotController-master.TeamCode" target="11" />
     </bytecodeTargetLevel>
   </component>
