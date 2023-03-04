@@ -28,8 +28,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@Autonomous(group = "right")
-public class PreloadRight extends LinearOpMode {
+@Autonomous
+public class OdometryPark extends LinearOpMode {
 
     //Value of slides at high junction (use ArmReader)
     double SLIDES_HIGH = 2200;
@@ -46,9 +46,9 @@ public class PreloadRight extends LinearOpMode {
     double FOREBAR_OUTTAKE = 0.3;
 
     //Value of clawbar at cone grabbing position (use LinkageTest to find trial and error the values)
-    double CLAWBAR_GRAB_POS = 0.63;
+    double CLAWBAR_GRAB_POS = 0.05;
 
-    double LINKAGE_OUT_POS = 0.28;
+    double LINKAGE_OUT_POS = 0.21;
 
     double LINKAGE_UP_POS = 0.36;
 
@@ -170,111 +170,33 @@ public class PreloadRight extends LinearOpMode {
 
 
             Trajectory traj = drive.trajectoryBuilder(new Pose2d(0, 0, Math.toRadians(0)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-50, 0, Math.toRadians(0)))
-                    .build();
-
-            Trajectory trajBack = drive.trajectoryBuilder(new Pose2d(0, 0, Math.toRadians(0)), Math.toRadians(0))
                     .lineToLinearHeading(new Pose2d(-48, 0, Math.toRadians(0)))
                     .build();
 
-            Trajectory traj2 = drive.trajectoryBuilder(trajBack.end())
-                    .lineToLinearHeading(new Pose2d(-56.5, 0, Math.toRadians(65)))
-                    .build();
-
-            Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                    .back(5)
-                    .build();
-
-            Trajectory traj4 = drive.trajectoryBuilder(traj2.end())
-                    .lineToLinearHeading(new Pose2d(-50.5, 0, Math.toRadians(90)))
-                    .build();
-
-            Trajectory traj5 = drive.trajectoryBuilder(traj4.end())
-                    .forward(25)
-                    .build();
-
-            Trajectory awayFromStack = drive.trajectoryBuilder(traj5.end())
-                    .back(25.5)
-                    .build();
-
-            Trajectory toJunction = drive.trajectoryBuilder(awayFromStack.end())
-                    .lineToLinearHeading(new Pose2d(-57, 0, Math.toRadians(78)))
-                    .build();
-
-            Trajectory traj6 = drive.trajectoryBuilder(new Pose2d(-49.5, -24, Math.toRadians(-90)), Math.toRadians(0))
-                    .splineToLinearHeading(new Pose2d(-43, -30, Math.toRadians(-45)), Math.toRadians(0))
-                    .build();
-
-            Trajectory traj7 = drive.trajectoryBuilder(new Pose2d(-43, -30, Math.toRadians(-45)), Math.toRadians(0))
-                    .splineToLinearHeading(new Pose2d(-50.5, -24, Math.toRadians(-90)), Math.toRadians(0))
-                    .build();
-
-            Trajectory park2 = drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-180)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-36, 0, Math.toRadians(-180)))
-                    .build();
-
-            Trajectory park1= drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-180)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-48, -24, Math.toRadians(-180)))
-                    .build();
-            Trajectory park1b= drive.trajectoryBuilder(new Pose2d(-48, -24, Math.toRadians(-180)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-36, -24, Math.toRadians(-180)))
-                    .build();
-
-            Trajectory park3= drive.trajectoryBuilder(new Pose2d(-48, 0, Math.toRadians(-180)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-48, 21.5, Math.toRadians(-180)))
-                    .build();
-
-            Trajectory park3b= drive.trajectoryBuilder(new Pose2d(-48, 21.5, Math.toRadians(-180)), Math.toRadians(0))
-                    .lineToLinearHeading(new Pose2d(-36, 21.5, Math.toRadians(-180)))
-                    .build();
 
             intake(0.25);
             clawOpen(0.01);
-            move4bar(0.065, 0.65);
+            move4bar(0.61, 0.65);
             forebarOPos(0.01);
             linkageIn(0.01);
 
             drive.followTrajectory(traj);
-            drive.followTrajectory(trajBack);
 
-            //linkageOut(0.15, 0.1);
-            //linkageIn(0.1);
-            move4bar(0.65, 0.5);
+            linkageOut(0.15, 0.1);
+            linkageIn(0.1);
+            move4bar(0, 0.5);
 
             color = pipeline.getAnalysis();
             telemetry.addData("Analysis", color);
             telemetry.update();
 
-            drive.followTrajectory(traj2);
-
-            moveArmUp(SLIDES_HIGH+150, 1.0);
-
-            drive.followTrajectory(traj3);
-
-            forebarPos(0.75, 0.8);
-            outtake(0.1);
-            stopIntake(0.1);
-            forebarPos(0.5, 0.2);
-            moveArmDown(0, 1.0);
-
-            drive.followTrajectory(traj4);
-
-
             if (color == "GREEN") {
-
-                drive.followTrajectory(park1);
-                drive.followTrajectory(park1b);
 
             }
             else if (color == "PURPLE") {
 
-                drive.followTrajectory(park2);
-
             }
             else if (color == "ORANGE") {
-
-                drive.followTrajectory(park3);
-                drive.followTrajectory(park3b);
 
             }
         }

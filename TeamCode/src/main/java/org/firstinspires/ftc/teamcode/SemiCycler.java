@@ -245,8 +245,6 @@ public class SemiCycler extends LinearOpMode {
             }
 
             if(mode==0) {
-                telemetry.addData(">", "Cycle Mode");
-                telemetry.update();
 
                 if (gamepad2.y) {
                     disableMode = false;
@@ -263,10 +261,6 @@ public class SemiCycler extends LinearOpMode {
                 }
             }
             else if(mode==1) {
-                telemetry.addData(">", "Drive Cone Mode");
-                telemetry.update();
-
-
 
                 if((gamepad2.right_trigger > 0.2)&&(!disableMode)) {
                     mode = 0;
@@ -468,10 +462,6 @@ public class SemiCycler extends LinearOpMode {
                         keepForebarI(1.0);
                     }
 
-                }
-                else if(gamepad2.y) {
-                    leftForebar.setPosition(0.1);
-                    rightForebar.setPosition(0.1);
                 }
             }
         }

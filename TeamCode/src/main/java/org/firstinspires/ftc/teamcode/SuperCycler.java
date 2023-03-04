@@ -35,21 +35,17 @@ public class SuperCycler extends LinearOpMode {
     double SLIDES_HOLD = SLIDES_INTAKE + 250;
 
     //Value of forebar at intake position (use ServoZeroer and trial and error the values)
-    double FOREBAR_INTAKE = 0.8;
+    double FOREBAR_INTAKE = 1.0;
 
     //Value of forebar at outtake position (use ServoZeroer and trial and error the values)
     double FOREBAR_OUTTAKE = 0.4;
 
     //Value of clawbar at cone grabbing position (use LinkageTest to find trial and error the values)
-    double CLAWBAR_GRAB_POS = 0.63;
+    double CLAWBAR_GRAB_POS = 0.05;
 
-    double LINKAGE_OUT_POS = 0.18;
+    double LINKAGE_OUT_POS = 0.21;
 
     int beginning = 0;
-
-    int gamepadMap = 0;
-    //0 = cycle
-    //1 = drive & place
 
     boolean holdUp = false;
     boolean moveUp = false;
@@ -186,7 +182,7 @@ public class SuperCycler extends LinearOpMode {
         while (opModeIsActive()) {
 
             //automatically sets fore
-            if (beginning == 0) {
+            if (beginning==0) {
                 leftLinkage.setPosition(0);
                 rightLinkage.setPosition(0);
                 linkagePosition = 0;
@@ -258,11 +254,6 @@ public class SuperCycler extends LinearOpMode {
                     move4bar(0, 0.1);
                     claw4bar = false;
                 }
-            }
-
-            if(gamepad2.a) {
-                leftForebar.setPosition(0.2);
-                rightForebar.setPosition(0.2 + 0.065);
             }
 
             if(gamepad2.right_stick_y < 0) {
@@ -412,18 +403,13 @@ public class SuperCycler extends LinearOpMode {
 
             if (gamepad2.x) {
                 if(forebarIntake) {
-                    leftForebar.setPosition(FOREBAR_OUTTAKE+.05);
-                    rightForebar.setPosition(FOREBAR_OUTTAKE + 0.065);
-                    forebarIntake = false;
                     keepForebarO(1.0);
+                    forebarIntake = false;
                 }
                 else if(!forebarIntake) {
-                    leftForebar.setPosition(0);
-                    rightForebar.setPosition(0 + 0.065);
-                    forebarIntake = true;
                     keepForebarI(1.0);
+                    forebarIntake = true;
                 }
-
             }
         }
     }
@@ -467,7 +453,7 @@ public class SuperCycler extends LinearOpMode {
         while(runtime.time() < run){
             leftLinkage.setPosition(pos);
             rightLinkage.setPosition(pos);
-            linkagePosition = 0;
+            linkagePosition = pos;
         }
     }
 
@@ -513,7 +499,7 @@ public class SuperCycler extends LinearOpMode {
 
     public void liftOdo(double time) {
         double run = (runtime.time()+time);
-        while(runtime.time() < run){
+        while(runtime.time() < run) {
             leftOdo.setPower(-1.0);
             rightOdo.setPower(-0.6);
             frontOdo.setPower(-1.0);
@@ -605,20 +591,20 @@ public class SuperCycler extends LinearOpMode {
         clawClose(0.25);
         move4bar(0, 0.5);
         linkageIn(0.35);
+        clawOpen(0.1);
     }
 
     public void triumvirate() {
+        //Linkage prepares to grab
+        linkageOut(LINKAGE_OUT_POS, 0.2);
+        move4bar(CLAWBAR_GRAB_POS, 0.2);
+
         intake(0.1);
         holdUp = false;
         moveArmDown(SLIDES_INTAKE, 1.0);
         holdSlides(0.25);
-        clawOpen(0.01);
         //Slides go high
         moveArmUp(SLIDES_HIGH, 1.0);
-
-        //Linkage prepares to grab
-        linkageOut(LINKAGE_OUT_POS, 0.01);
-        move4bar(CLAWBAR_GRAB_POS, 0.01);
 
 
         //Pull in cone and drop cone

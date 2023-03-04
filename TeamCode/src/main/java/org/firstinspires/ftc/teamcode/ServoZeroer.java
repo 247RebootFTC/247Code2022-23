@@ -31,8 +31,13 @@ public class ServoZeroer extends LinearOpMode {
     private Servo claw;
     private CRServo intake;
 
+    private DcMotor leftSlide;
+    private DcMotor rightSlide;
+
     //Time Variable
     private ElapsedTime runtime = new ElapsedTime();
+
+    int pos = 0;
 
     //motor speed variables
     double LF;
@@ -98,21 +103,80 @@ public class ServoZeroer extends LinearOpMode {
             telemetry.addData("Right 4bar: ", right4bar.getPosition());
             telemetry.update();
 
-            if(gamepad1.y) {//open claw
-                claw.setPosition(0.25);
+            //1 : .025
+            //2 : .065
+            //3: .1
+            //4: .15
+            //5: .175
+
+            if(gamepad2.dpad_up) {//open claw
+                moveArmDown(2200, 1.0);
             }
-            else if(gamepad1.x) {//close claw
-                claw.setPosition(0);
+            if(gamepad2.dpad_right) {//open claw
+                moveArmDown(1400, 1.0);
+            }
+            if(gamepad2.dpad_down) {//open claw
+                moveArmDown(900, 1.0);
             }
 
+            if(gamepad2.dpad_left) {//open claw
+                moveArmDown(500, 1.0);
+            }
+
+            if(gamepad2.y) {
+                leftForebar.setPosition(0.4);
+                rightForebar.setPosition(0.4);
+            }
+
+            if(gamepad2.b) {
+                leftForebar.setPosition(0.9);
+                rightForebar.setPosition(0.9);
+            }
+
+            if(gamepad1.y) {//open claw
+                leftLinkage.setPosition(0.3);
+                rightLinkage.setPosition(0.3);
+            }
+
+            else if(gamepad1.x) {//close claw
+                left4bar.setPosition(0.065);
+                right4bar.setPosition(0.065);
+            }
+
+            else if(gamepad1.a) {//close claw
+                left4bar.setPosition(0.025);
+                right4bar.setPosition(0.025);
+            }
 
             if(gamepad1.b) {//O button
                 leftLinkage.setPosition(0);
                 rightLinkage.setPosition(0);
-                left4bar.setPosition(0);
-                right4bar.setPosition(0);
             }
 
+            if(gamepad1.dpad_up)  {
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+            }
+            if(gamepad1.dpad_right)  {
+                leftLinkage.setPosition(0.15);
+                rightLinkage.setPosition(0.15);
+            }
+            if(gamepad1.dpad_down)  {
+                leftLinkage.setPosition(0.2);
+                rightLinkage.setPosition(0.2);
+            }
+            if(gamepad1.dpad_left)  {
+                left4bar.setPosition(0.6);
+                right4bar.setPosition(0.6);
+            }
+            if(gamepad1.left_bumper) {
+                claw.setPosition(0);
+            }
+            if(gamepad1.right_bumper) {
+                claw.setPosition(0.25);
+            }
+
+/*
             if(gamepad1.dpad_up) {//X button
                 leftLinkage.setPosition(0.215);
                 rightLinkage.setPosition(0.215);
@@ -156,7 +220,7 @@ public class ServoZeroer extends LinearOpMode {
                 stop(0.05, .45);
                 left4bar.setPosition(0.10);
                 right4bar.setPosition(0.09);*/
-            }
+         /*   }
             if(gamepad1.dpad_down) {//X button
                 left4bar.setPosition(.46);
                 right4bar.setPosition(.45);
@@ -171,21 +235,10 @@ public class ServoZeroer extends LinearOpMode {
                 stop(0.05, .46);
                 left4bar.setPosition(0.10);
                 right4bar.setPosition(0.09);*/
-            }
+          /*  }
             if(gamepad1.right_trigger > 0.2) {//O but
-                left4bar.setPosition(.52);
-                right4bar.setPosition(.51);
-                stop5(0.1);
                 leftLinkage.setPosition(0.215);
                 rightLinkage.setPosition(0.215);
-                /*stop(2.0, .52);
-                claw.setPosition(0.25);
-                stop(1.0, .52);
-                leftLinkage.setPosition(0.36);
-                rightLinkage.setPosition(0.36);
-                stop(0.05, .52);
-                left4bar.setPosition(0.10);
-                right4bar.setPosition(0.09);*/
             }
             //Cone 5 -  .35/.34 (Topmost cone)
             //Cone 4 - .39/.38
@@ -193,7 +246,7 @@ public class ServoZeroer extends LinearOpMode {
             //Cone 2 - .44/.43
             //Cone 1 - .49/.48
 
-        }
+        */}
 
     }
 
@@ -223,6 +276,34 @@ public class ServoZeroer extends LinearOpMode {
         while(runtime.time() < run) {
             leftLinkage.setPosition(0);
             rightLinkage.setPosition(0);
+        }
+    }
+
+    public void moveArmUp(double pos, double speed) {
+        while(((-1*leftSlide.getCurrentPosition()) < pos) || ((-1*rightSlide.getCurrentPosition()) < pos)) {
+            leftSlide.setPower(speed);
+            rightSlide.setPower(speed);
+        }
+        holdArm();
+    }
+
+    public void moveArmDown(double pos, double speed) {
+        while(((-1*leftSlide.getCurrentPosition()) > pos) || ((-1*rightSlide.getCurrentPosition()) > pos)) {
+            leftSlide.setPower(-speed);
+            rightSlide.setPower(-speed);
+        }
+        holdArm();
+    }
+
+    public void holdArm() {
+        leftSlide.setPower(0.1);
+        rightSlide.setPower(0.1);
+    }
+    public void holdSlides(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftSlide.setPower(0.1);
+            rightSlide.setPower(0.1);
         }
     }
 }
