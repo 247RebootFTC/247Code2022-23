@@ -22,6 +22,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -46,6 +47,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * 100% accurate) method of detecting the skystone when lined up with
  * the sample regions over the first 3 stones.
  */
+
+@Disabled
 @Autonomous
 public class SensePark extends LinearOpMode {
 
@@ -145,7 +148,7 @@ public class SensePark extends LinearOpMode {
 
         waitForStart();
 
-        String color = pipeline.getAnalysis();
+        String color;
 
         if (opModeIsActive()) {
 
@@ -161,23 +164,38 @@ public class SensePark extends LinearOpMode {
             motorbackLeft.setDirection(DcMotor.Direction.REVERSE);
             motorbackRight.setDirection(DcMotor.Direction.FORWARD);
 
-            telemetry.addData("Analysis", color);
+            /*telemetry.addData("Analysis", color);
             telemetry.addData("Cb Value:", pipeline.getCb());
             telemetry.addData("Cr Value:", pipeline.getCr());
+            telemetry.update();*/
+
+            moveForward(1.9);
+
+            color = pipeline.getAnalysis();
+
+            telemetry.addData("Analysis", color);
             telemetry.update();
 
+            stop(1.0);
+
+            moveForward(0.5);
+            stop(0.5);
+            moveBackward(0.5);
+            stop(0.5);
+
             if(color=="GREEN") {
-                strafeLeft(0.91);
+                strafeLeft(3.3);
+                turnRight(0.2);
+                moveForward(0.75);
                 stop(1.0);
-                moveForward(0.24);
             }
-            else if(color=="PINK") {
-                moveForward(0.17);
+            else if(color=="PURPLE") {
+                moveForward(0.9);
             }
             else if(color=="ORANGE") {
-                strafeRight(1.1);
+                strafeRight(3.3);
+                moveForward(0.65);
                 stop(1.0);
-                moveForward(0.24);
             }
 
             // Don't burn CPU cycles busy-looping in this sample
@@ -192,20 +210,20 @@ public class SensePark extends LinearOpMode {
     public void moveForward(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(1);
-            motorfrontRight.setPower(1);
-            motorbackLeft.setPower(1);
-            motorbackRight.setPower(1);
+            motorfrontLeft.setPower(0.25);
+            motorfrontRight.setPower(0.25);
+            motorbackLeft.setPower(0.25);
+            motorbackRight.setPower(0.25);
         }
     }
 
     public void moveBackward(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(-1);
-            motorfrontRight.setPower(-1);
-            motorbackLeft.setPower(-1);
-            motorbackRight.setPower(-1);
+            motorfrontLeft.setPower(-0.25);
+            motorfrontRight.setPower(-0.25);
+            motorbackLeft.setPower(-0.25);
+            motorbackRight.setPower(-0.25);
         }
     }
 
@@ -222,30 +240,30 @@ public class SensePark extends LinearOpMode {
     public void turnRight(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(1);
-            motorfrontRight.setPower(-1);
-            motorbackLeft.setPower(1);
-            motorbackRight.setPower(-1);
+            motorfrontLeft.setPower(0.25);
+            motorfrontRight.setPower(-0.25);
+            motorbackLeft.setPower(0.25);
+            motorbackRight.setPower(-0.25);
         }
     }
 
     public void strafeLeft(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(-0.5);
-            motorfrontRight.setPower(0.5);
-            motorbackLeft.setPower(0.5);
-            motorbackRight.setPower(-0.5);
+            motorfrontLeft.setPower(0.25);
+            motorfrontRight.setPower(-0.25);
+            motorbackLeft.setPower(-0.25);
+            motorbackRight.setPower(0.25);
         }
     }
 
     public void strafeRight(double time){
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            motorfrontLeft.setPower(0.5);
-            motorfrontRight.setPower(-0.5);
-            motorbackLeft.setPower(-0.5);
-            motorbackRight.setPower(0.5);
+            motorfrontLeft.setPower(-0.25);
+            motorfrontRight.setPower(0.25);
+            motorbackLeft.setPower(0.25);
+            motorbackRight.setPower(-0.25);
         }
     }
 
@@ -425,24 +443,9 @@ public class SensePark extends LinearOpMode {
              * Now that we found the max, we actually need to go and
              * figure out which sample region that value was from
              */
-            if((Cb_val > 110)&&(Cr_val > 140)) // Was it from region 1?
+            if((Cb_val > 125)&&(Cr_val > 110)) // Was it from region 1?
             {
-                position = "PINK"; // Record our analysis
-
-                /*
-                 * Draw a solid rectangle on top of the chosen region.
-                 * Simply a visual aid. Serves no functional purpose.
-                 */
-                Imgproc.rectangle(
-                        input, // Buffer to draw on
-                        region_pointA, // First point which defines the rectangle
-                        region_pointB, // Second point which defines the rectangle
-                        RED, // The color the rectangle is drawn in
-                        -1); // Negative thickness means solid fill
-            }
-            else if((Cb_val < 110)&&(Cr_val > 140)) // Was it from region 2?
-            {
-                position = "ORANGE"; // Record our analysis
+                position = "PURPLE"; // Record our analysis
 
                 /*
                  * Draw a solid rectangle on top of the chosen region.
@@ -455,7 +458,22 @@ public class SensePark extends LinearOpMode {
                         BLUE, // The color the rectangle is drawn in
                         -1); // Negative thickness means solid fill
             }
-            else if((Cb_val > 110)&&(Cr_val > 110)) // Was it from region 3?
+            else if((Cb_val < 120)&&(Cr_val > 125)) // Was it from region 2?
+            {
+                position = "ORANGE"; // Record our analysis
+
+                /*
+                 * Draw a solid rectangle on top of the chosen region.
+                 * Simply a visual aid. Serves no functional purpose.
+                 */
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region_pointA, // First point which defines the rectangle
+                        region_pointB, // Second point which defines the rectangle
+                        RED, // The color the rectangle is drawn in
+                        -1); // Negative thickness means solid fill
+            }
+            else if((Cb_val < 130)&&(Cr_val < 130)) // Was it from region 3?
             {
                 position = "GREEN"; // Record our analysis
 

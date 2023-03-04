@@ -19,20 +19,12 @@
  * SOFTWARE.
  */
 
-//DO NOT CHANGE
-//DO NOT CHANGE
-//DO NOT CHANGE
-//DO NOT CHANGE
-//DO NOT CHANGE
-//DO NOT CHANGE
-//DO NOT CHANGE
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -45,7 +37,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 /*
@@ -54,11 +48,25 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  * the sample regions over the first 3 stones.
  */
 
+@Disabled
 @Autonomous
-public class Colors extends LinearOpMode
-{
+public class BackwardsSensePark extends LinearOpMode {
+
     OpenCvWebcam webcam;
     SkystoneDeterminationPipeline pipeline = new SkystoneDeterminationPipeline();
+
+    //Declare Drive Motors
+    private DcMotor motorfrontLeft;
+    private DcMotor motorfrontRight;
+    private DcMotor motorbackLeft;
+    private DcMotor motorbackRight;
+
+    //Declare Regular Servos
+    private Servo leftForebar;
+    private Servo rightForebar;
+
+    //The Time Object
+    private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
@@ -139,21 +147,153 @@ public class Colors extends LinearOpMode
             }
         });
 
-
+        telemetry.addData(">", "DRAGON: ATTAAAAAAAAAAAACK");
+        telemetry.update();
 
         waitForStart();
 
-        String color = pipeline.getAnalysis();
+        String color;
 
-        while (opModeIsActive()) {
-            telemetry.addData("Analysis", color);
+        if (opModeIsActive()) {
 
+            //Initialize Drive Motors
+            motorfrontLeft = hardwareMap.dcMotor.get("motorfrontLeft");
+            motorfrontRight = hardwareMap.dcMotor.get("motorfrontRight");
+            motorbackLeft = hardwareMap.dcMotor.get("motorbackLeft");
+            motorbackRight = hardwareMap.dcMotor.get("motorbackRight");
+
+            //Initialize Regular Servos
+            leftForebar = hardwareMap.servo.get("leftForebar");
+            rightForebar = hardwareMap.servo.get("rightForebar");
+
+            //Initialize Drive Motors' Directions
+            motorfrontLeft.setDirection(DcMotor.Direction.REVERSE);
+            motorfrontRight.setDirection(DcMotor.Direction.FORWARD);
+            motorbackLeft.setDirection(DcMotor.Direction.REVERSE);
+            motorbackRight.setDirection(DcMotor.Direction.FORWARD);
+
+            //Initialize Servos' Directions
+            leftForebar.setDirection(Servo.Direction.FORWARD);
+            rightForebar.setDirection(Servo.Direction.REVERSE);
+
+            /*telemetry.addData("Analysis", color);
             telemetry.addData("Cb Value:", pipeline.getCb());
             telemetry.addData("Cr Value:", pipeline.getCr());
+            telemetry.update();*/
+
+
+            moveBackward(1.5);
+
+            color = pipeline.getAnalysis();
+
+            telemetry.addData("Analysis", color);
             telemetry.update();
+
+            stop(1.0);
+
+            moveBackward(0.9);
+            stop(0.5);
+            moveForward(0.7);
+            stop(0.5);
+
+            if(color=="GREEN") {
+                strafeRight(3.3);
+                turnLeft(0.2);
+                moveBackward(0.75);
+                stop(1.0);
+            }
+            else if(color=="PURPLE") {
+                moveBackward(0.9);
+            }
+            else if(color=="ORANGE") {
+                strafeLeft(3.3);
+                moveBackward(0.65);
+                stop(1.0);
+            }
+
+            moveForebar();
 
             // Don't burn CPU cycles busy-looping in this sample
             sleep(50);
+        }
+    }
+
+    /** FUNCTIONS */
+
+    /** TIME-BASED */
+
+    public void moveForward(double time){
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            motorfrontLeft.setPower(0.25);
+            motorfrontRight.setPower(0.25);
+            motorbackLeft.setPower(0.25);
+            motorbackRight.setPower(0.25);
+        }
+    }
+
+    public void moveBackward(double time){
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            motorfrontLeft.setPower(-0.25);
+            motorfrontRight.setPower(-0.25);
+            motorbackLeft.setPower(-0.25);
+            motorbackRight.setPower(-0.25);
+        }
+    }
+
+    public void turnLeft(double time){
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            motorfrontLeft.setPower(-0.25);
+            motorfrontRight.setPower(0.25);
+            motorbackLeft.setPower(-0.25);
+            motorbackRight.setPower(0.25);
+        }
+    }
+
+    public void turnRight(double time){
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            motorfrontLeft.setPower(0.25);
+            motorfrontRight.setPower(-0.25);
+            motorbackLeft.setPower(0.25);
+            motorbackRight.setPower(-0.25);
+        }
+    }
+
+    public void strafeLeft(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            motorfrontLeft.setPower(0.25);
+            motorfrontRight.setPower(-0.25);
+            motorbackLeft.setPower(-0.25);
+            motorbackRight.setPower(0.25);
+        }
+    }
+
+    public void strafeRight(double time){
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            motorfrontLeft.setPower(-0.25);
+            motorfrontRight.setPower(0.25);
+            motorbackLeft.setPower(0.25);
+            motorbackRight.setPower(-0.25);
+        }
+    }
+
+    public void moveForebar() {
+        leftForebar.setPosition(0.8);
+        rightForebar.setPosition(0.8);
+    }
+
+    public void stop(double time){
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            motorfrontLeft.setPower(0);
+            motorfrontRight.setPower(0);
+            motorbackLeft.setPower(0);
+            motorbackRight.setPower(0);
         }
     }
 

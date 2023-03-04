@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+//package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -62,7 +62,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
  * is explained below.
  */
 @Autonomous(name = "Test", group = "Blue Autonomi")
-//@Disabled
+@Disabled
 public class Test extends LinearOpMode {
 
     /* Encoder Specific defines */

@@ -20,8 +20,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @Disabled
-@TeleOp (name="Reuben's Wild Ride")
-public class ReubensWildRide extends LinearOpMode {
+@TeleOp
+public class ArmEncoder extends LinearOpMode {
 
     private static final double INCHES_PER_REV = 1.978956002259843;
     private static final double COUNTS_PER_MOTOR_REV    = 537.6;
@@ -119,9 +119,10 @@ public class ReubensWildRide extends LinearOpMode {
         rightSlide.setDirection(DcMotor.Direction.REVERSE);
 
         //Initialize Servos' Directions
-        leftForebar.setDirection(Servo.Direction.FORWARD);
-        rightForebar.setDirection(Servo.Direction.REVERSE);
+        leftForebar.setDirection(Servo.Direction.REVERSE);
+        rightForebar.setDirection(Servo.Direction.FORWARD);
 
+        initEncoder();
 
         telemetry.addData(">", "DRAGON: PREPARE FOR TAKEOFF");
         telemetry.update();
@@ -140,6 +141,10 @@ public class ReubensWildRide extends LinearOpMode {
                 pos = 1;
             }
 
+            telemetry.addLine(String.valueOf(leftSlide.getCurrentPosition()));
+            telemetry.addLine(String.valueOf(rightSlide.getCurrentPosition()));
+
+            telemetry.update();
 
 
             //reset speed variables
@@ -261,20 +266,48 @@ public class ReubensWildRide extends LinearOpMode {
             }
 
             if (gamepad2.left_stick_y < 0.0) {
+                holdUp = false;
                 leftSlide.setPower(1);
                 rightSlide.setPower(1);
             }
             else if (gamepad2.left_stick_y > 0.0) {
-                leftSlide.setPower(-0.8);
-                rightSlide.setPower(-0.8);
+                holdUp = false;
+                leftSlide.setPower(-1);
+                rightSlide.setPower(-1);
             }
             else if(gamepad2.a) {
+                holdUp = false;
                 leftSlide.setPower(0.1);
                 rightSlide.setPower(0.1);
             }
             else if(gamepad2.y) {
+                holdUp = false;
                 leftSlide.setPower(-0.1);
                 rightSlide.setPower(-0.1);
+            }
+            else if(gamepad2.dpad_up) {
+                //High Junction
+                holdUp = false;
+                moveArm(0.2, 2900);
+            }
+            else if(gamepad2.dpad_right) {
+                //Middle Junction
+                holdUp = false;
+                moveArm(0.2, 1200);
+            }
+            else if(gamepad2.dpad_down) {
+                //Low Junction
+                holdUp = false;
+                moveArm(0.2, 700);
+            }
+            else if(gamepad2.dpad_left) {
+                //Intake Height
+                holdUp = false;
+                moveArm(0.2, 300);
+            }
+            else if(holdUp) {
+                leftSlide.setPower(0.1);
+                rightSlide.setPower(0.1);
             }
             else {
                 leftSlide.setPower(0);
@@ -292,6 +325,147 @@ public class ReubensWildRide extends LinearOpMode {
 
         }
 
+    }
+
+    public void moveArm(double speed, int pos) {
+        int newLeftTarget;
+        int newRightTarget;
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+
+            // Determine new target position, and pass to motor controller
+            //newLeftTarget = pos - leftSlide.getCurrentPosition();
+            //newRightTarget = pos - rightSlide.getCurrentPosition();
+
+
+            //used to be motorbackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+
+            //sleep(2000);
+
+            if((pos > (-1*leftSlide.getCurrentPosition()))&&((pos > (-1*rightSlide.getCurrentPosition())))) {
+                //newLeftTarget = pos;
+                //newRightTarget = pos;
+                //leftSlide.setTargetPosition(newLeftTarget);
+                //rightSlide.setTargetPosition(newRightTarget);
+
+                // Turn On RUN_TO_POSITION
+                //leftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                //rightSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                leftSlide.setPower(0.75);
+                rightSlide.setPower(0.75);
+
+                while(opModeIsActive() && (((-1*leftSlide.getCurrentPosition()) < pos) ||
+                        ((-1*rightSlide.getCurrentPosition()) < pos))) {
+                    // Display it for the driver.
+                    telemetry.addData("Path1",  "Running to: ",
+                            leftSlide,  rightSlide);
+
+                    telemetry.addData("Path2",  "Running at: ",
+                            leftSlide.getCurrentPosition(),
+                            rightSlide.getCurrentPosition());
+
+                    telemetry.addData("<", "POSITIVE WHILE LOOP");
+
+                    telemetry.update();
+
+
+                }
+            }
+            else if((pos < (-1*leftSlide.getCurrentPosition()))&&((pos < (-1*rightSlide.getCurrentPosition())))) {
+                //newLeftTarget = -1*pos;
+                //newRightTarget = -1*pos;
+                //leftSlide.setTargetPosition(newLeftTarget);
+                //rightSlide.setTargetPosition(newRightTarget);
+
+                // Turn On RUN_TO_POSITION
+                //rightSlide.setMode(RunMode.RUN_TO_POSITION);
+                //leftSlide.setMode(RunMode.RUN_TO_POSITION);
+
+                leftSlide.setPower(-1*speed);
+                rightSlide.setPower(-1*speed);
+
+                while(opModeIsActive() && (((-1*leftSlide.getCurrentPosition()) > pos) ||
+                        ((-1*rightSlide.getCurrentPosition()) > pos))) {
+                    //Display it for the driver.
+                    telemetry.addData("<", "NEGATIVE WHILE LOOP");
+                    telemetry.update();
+
+
+                }
+            }
+            /*else if((pos < (-1*leftSlide.getCurrentPosition()))&&((pos < (-1*rightSlide.getCurrentPosition())))) {
+                leftSlide.setPower(-0.2);
+                rightSlide.setPower(-0.2);
+
+                while(opModeIsActive() && (((-1*leftSlide.getCurrentPosition()) > newLeftTarget) ||
+                        ((-1*rightSlide.getCurrentPosition()) > newRightTarget))) {
+
+                    // Display it for the driver.
+                    telemetry.addData("Path1",  "Running to: ",
+                            leftSlide,  rightSlide);
+
+                    telemetry.addData("Path2",  "Running at: ",
+                            leftSlide.getCurrentPosition(),
+                            rightSlide.getCurrentPosition());
+                    telemetry.update();
+
+
+                }
+            }
+            else {
+                holdUp = true;
+            }*/
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            //while (opModeIsActive() && (leftSlide.isBusy() && rightSlide.isBusy())) {
+
+
+            // Stop all motion;
+            leftSlide.setPower(0.1);
+            rightSlide.setPower(0.1);
+            holdUp = true;
+
+            /*leftSlide.setPower(0.1);
+            rightSlide.setPower(0.1);*/
+
+            // Turn off RUN_TO_POSITION
+            leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+            //sleep(5);   // delete if code not meant to pause
+        }
+    }
+
+    public void initEncoder() {
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Status", "Resetting Encoders");
+        telemetry.update();
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // Send telemetry message to indicate successful Encoder reset
+        /*telemetry.addData("Path0",  "Starting at %7d :%7d :%7d :%7d",
+                leftSlide.getCurrentPosition(),
+                rightSlide.getCurrentPosition());
+        telemetry.update();*/
     }
 
 }

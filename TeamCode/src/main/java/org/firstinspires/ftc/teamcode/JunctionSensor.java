@@ -40,6 +40,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
 /*
@@ -47,6 +48,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * 100% accurate) method of detecting the skystone when lined up with
  * the sample regions over the first 3 stones.
  */
+
+@Disabled
 @TeleOp
 public class JunctionSensor extends LinearOpMode {
     OpenCvWebcam webcam;
@@ -196,7 +199,7 @@ public class JunctionSensor extends LinearOpMode {
             motorbackRight.setPower(-0.5);
         }
     }
-
+    //Commit Test
     //Stop
     public void Stop(double time){
         double run=(runtime.time()+time);
