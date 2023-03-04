@@ -20,8 +20,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @Disabled
-@TeleOp (name="Reuben's Wild Ride")
-public class ReubensWildRide extends LinearOpMode {
+@TeleOp
+public class BestCode extends LinearOpMode {
 
     private static final double INCHES_PER_REV = 1.978956002259843;
     private static final double COUNTS_PER_MOTOR_REV    = 537.6;
@@ -30,6 +30,9 @@ public class ReubensWildRide extends LinearOpMode {
     double rightInches;
 
     boolean holdUp = false;
+    boolean moveUp = false;
+    boolean moveDown = false;
+    double pos = 0;
 
     //This is where we set all of our variables so we can call them in future code
     double tgtPower = 0;
@@ -78,17 +81,13 @@ public class ReubensWildRide extends LinearOpMode {
     //double D1;
     //double D2;
 
-    //acceleration thingy
-    double acc = 0;
     //analog values
-    double joyScale = 1;
+    double joyScale = 0.8;
     double joyScale2 = 0.6;
     double motorMax = 0.9;
 
     @Override
     public void runOpMode() throws InterruptedException {
-
-        double pos = 0;
 
         // Initialize Drive Motors
         motorfrontLeft = hardwareMap.dcMotor.get("motorfrontLeft");
@@ -122,8 +121,9 @@ public class ReubensWildRide extends LinearOpMode {
         leftForebar.setDirection(Servo.Direction.FORWARD);
         rightForebar.setDirection(Servo.Direction.REVERSE);
 
+        initEncoder();
 
-        telemetry.addData(">", "DRAGON: PREPARE FOR TAKEOFF");
+        telemetry.addData("DRAGON: ", "I am in extreme agony");
         telemetry.update();
 
         //Wait to start code
@@ -133,13 +133,18 @@ public class ReubensWildRide extends LinearOpMode {
         //All motors are backwards except ones that are used
         while (opModeIsActive()) {
 
-            if(pos==0) {
+            //automatically sets fore
+            if (pos == 0) {
                 leftForebar.setPosition(0.25);
                 rightForebar.setPosition(0.25);
 
                 pos = 1;
             }
 
+            telemetry.addLine(String.valueOf(leftSlide.getCurrentPosition()));
+            telemetry.addLine(String.valueOf(rightSlide.getCurrentPosition()));
+
+            telemetry.update();
 
 
             //reset speed variables
@@ -243,40 +248,126 @@ public class ReubensWildRide extends LinearOpMode {
             motorbackLeft.setPower(LB);
             motorbackRight.setPower(RB);
 
-            if(gamepad2.right_bumper) {
+            if (gamepad2.right_bumper) {
                 frontIntake.setPower(-1);
                 backIntake.setPower(1);
-            }
-            else if(gamepad2.left_bumper) {
+            } else if (gamepad2.left_bumper) {
                 frontIntake.setPower(1);
                 backIntake.setPower(-1);
-            }
-            else if(gamepad2.right_trigger > 0.2) {
+            } else if (gamepad2.right_trigger > 0.2) {
                 frontIntake.setPower(0);
                 backIntake.setPower(0);
-            }
-            else if(gamepad2.left_trigger > 0.2) {
+            } else if (gamepad2.left_trigger > 0.2) {
                 frontIntake.setPower(0);
                 backIntake.setPower(0);
             }
 
-            if (gamepad2.left_stick_y < 0.0) {
-                leftSlide.setPower(1);
-                rightSlide.setPower(1);
+
+            if(moveUp) {
+                if(((-1*leftSlide.getCurrentPosition()) >= pos) || ((-1*rightSlide.getCurrentPosition()) >= pos)) {
+                    moveUp = false;
+                    holdUp = true;
+                    leftSlide.setPower(0.1);
+                    rightSlide.setPower(0.1);
+                    telemetry.addLine("MOVE UP FALSE");
+                    telemetry.update();
+                }
+                else {
+                    leftSlide.setPower(1.0);
+                    rightSlide.setPower(1.0);
+                    telemetry.addLine("MOVE UP TRUE");
+                    telemetry.update();
+                }
+            }
+            else if(moveDown) {
+                if(((-1*leftSlide.getCurrentPosition()) <= pos) || ((-1*rightSlide.getCurrentPosition()) <= pos)) {
+                    moveDown = false;
+                    holdUp = true;
+                    leftSlide.setPower(0.1);
+                    rightSlide.setPower(0.1);
+                    telemetry.addLine("MOVE DOWN FALSE");
+                    telemetry.update();
+                }
+                else {
+                    leftSlide.setPower(-1.0);
+                    rightSlide.setPower(-1.0);
+                    telemetry.addLine("MOVE DOWN TRUE");
+                    telemetry.update();
+                }
+            }
+            else if (gamepad2.left_stick_y < 0.0) {
+                holdUp = false;
+                moveUp = false;
+                moveDown = false;
+                leftSlide.setPower(0.6);
+                rightSlide.setPower(0.6);
             }
             else if (gamepad2.left_stick_y > 0.0) {
-                leftSlide.setPower(-0.8);
-                rightSlide.setPower(-0.8);
+                holdUp = false;
+                moveUp = false;
+                moveDown = false;
+                leftSlide.setPower(-0.6);
+                rightSlide.setPower(-0.6);
             }
             else if(gamepad2.a) {
+                holdUp = false;
+                moveUp = false;
+                moveDown = false;
                 leftSlide.setPower(0.1);
                 rightSlide.setPower(0.1);
             }
             else if(gamepad2.y) {
+                holdUp = false;
+                moveUp = false;
+                moveDown = false;
                 leftSlide.setPower(-0.1);
                 rightSlide.setPower(-0.1);
             }
+            else if(gamepad2.dpad_up) {
+                //High Junction
+                holdUp = false;
+                moveUp = false;
+                moveDown = false;
+                pos = 2900;
+                moveArm();
+            }
+            else if(gamepad2.dpad_right) {
+                //Middle Junction
+                holdUp = false;
+                moveUp = false;
+                moveDown = false;
+                pos = 1200;
+                moveArm();
+            }
+            else if(gamepad2.dpad_down) {
+                //Low Junction
+                holdUp = false;
+                moveUp = false;
+                moveDown = false;
+                pos = 700;
+                moveArm();
+            }
+            else if(gamepad2.dpad_left) {
+                telemetry.addLine("IN DPAD LEFT IF STATEMENT");
+                telemetry.update();
+                //Intake Height
+                holdUp = false;
+                moveUp = false;
+                moveDown = false;
+                pos = 300;
+                moveArm();
+            }
+            else if(holdUp) {
+                moveUp = false;
+                moveDown = false;
+                leftSlide.setPower(0.1);
+                rightSlide.setPower(0.1);
+                telemetry.addLine("HOLD UP FUNCTION");
+                telemetry.update();
+            }
             else {
+                moveUp = false;
+                moveDown = false;
                 leftSlide.setPower(0);
                 rightSlide.setPower(0);
             }
@@ -292,6 +383,59 @@ public class ReubensWildRide extends LinearOpMode {
 
         }
 
+    }
+
+    public void moveArm() {
+
+        telemetry.addLine("LEFT SLIDE POS: " + String.valueOf(leftSlide.getCurrentPosition()));
+        telemetry.addLine("RIGHT SLIDE POS: " + String.valueOf(rightSlide.getCurrentPosition()));
+        telemetry.addLine("POS: " + String.valueOf(pos));
+        telemetry.update();
+
+        //MOVE UP
+        if((pos > (-1*leftSlide.getCurrentPosition()))&&((pos > (-1*rightSlide.getCurrentPosition())))) {
+
+            telemetry.addLine("IN MOVE UP STATEMENT");
+            telemetry.update();
+
+            leftSlide.setPower(0.75);
+            rightSlide.setPower(0.75);
+
+            moveUp = true;
+        }
+        //MOVE DOWN
+        else if((pos < (-1*leftSlide.getCurrentPosition()))&&((pos < (-1*rightSlide.getCurrentPosition())))) {
+
+            telemetry.addLine("IN MOVE DOWN STATEMENT");
+            telemetry.update();
+
+            leftSlide.setPower(-0.2);
+            rightSlide.setPower(-0.2);
+
+            moveDown = true;
+        }
+
+    }
+
+    public void initEncoder() {
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Status", "Resetting Encoders");
+        telemetry.update();
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // Send telemetry message to indicate successful Encoder reset
+        /*telemetry.addData("Path0",  "Starting at %7d :%7d :%7d :%7d",
+                leftSlide.getCurrentPosition(),
+                rightSlide.getCurrentPosition());
+        telemetry.update();*/
     }
 
 }
