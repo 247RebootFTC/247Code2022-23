@@ -1,6 +1,3 @@
-//This is a test -- comment
-//This is an updated test for branch protection (PR needed to merge)
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
