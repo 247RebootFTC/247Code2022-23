@@ -1,3 +1,5 @@
+//NO
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -85,8 +87,8 @@ public class ServoZeroer extends LinearOpMode {
         leftLinkage.setDirection(Servo.Direction.REVERSE);
         rightLinkage.setDirection(Servo.Direction.FORWARD);
 
-        leftForebar.setDirection(Servo.Direction.FORWARD);
-        rightForebar.setDirection(Servo.Direction.REVERSE);
+        leftForebar.setDirection(Servo.Direction.REVERSE);
+        rightForebar.setDirection(Servo.Direction.FORWARD);
 
         left4bar.setDirection(Servo.Direction.REVERSE);
         right4bar.setDirection(Servo.Direction.FORWARD);
@@ -103,77 +105,302 @@ public class ServoZeroer extends LinearOpMode {
             telemetry.addData("Right 4bar: ", right4bar.getPosition());
             telemetry.update();
 
-            //1 : .025
+            //1 : .0
             //2 : .065
             //3: .1
             //4: .15
             //5: .175
 
-            if(gamepad2.dpad_up) {//open claw
-                moveArmDown(2200, 1.0);
+            if(gamepad2.x) {//Cone 5
+
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.01);
+                leftLinkage.setPosition(0.38);
+                rightLinkage.setPosition(0.38);
+                stop(0.4);
+                left4bar.setPosition(0.15);
+                right4bar.setPosition(0.15);
+                stop(0.6);
+                claw.setPosition(0.35);
+                stop(0.25);
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.25);
+                leftLinkage.setPosition(0);
+                rightLinkage.setPosition(0);
+                stop(0.8);
+                left4bar.setPosition(0.65);
+                right4bar.setPosition(0.65);
+                stop(0.3);
+                claw.setPosition(0);
+                stop(0.1);
+
             }
-            if(gamepad2.dpad_right) {//open claw
-                moveArmDown(1400, 1.0);
+            if(gamepad2.dpad_left) {//Cone 4
+
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.01);
+                leftLinkage.setPosition(0.4);
+                rightLinkage.setPosition(0.4);
+                stop(0.4);
+                left4bar.setPosition(0.12);
+                right4bar.setPosition(0.12);
+                stop(0.6);
+                claw.setPosition(0.35);
+                stop(0.25);
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.25);
+                leftLinkage.setPosition(0);
+                rightLinkage.setPosition(0);
+                stop(0.8);
+                left4bar.setPosition(0.65);
+                right4bar.setPosition(0.65);
+                stop(0.3);
+                claw.setPosition(0);
+                stop(0.1);
             }
-            if(gamepad2.dpad_down) {//open claw
-                moveArmDown(900, 1.0);
+            if(gamepad2.dpad_down) {//Cone 3
+
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.01);
+                leftLinkage.setPosition(0.4);
+                rightLinkage.setPosition(0.4);
+                stop(0.4);
+                left4bar.setPosition(0.085);
+                right4bar.setPosition(0.085);
+                stop(0.7);
+                claw.setPosition(0.35);
+                stop(0.25);
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.25);
+                leftLinkage.setPosition(0);
+                rightLinkage.setPosition(0);
+                stop(0.8);
+                left4bar.setPosition(0.65);
+                right4bar.setPosition(0.65);
+                stop(0.3);
+                claw.setPosition(0);
+                stop(0.1);
             }
 
-            if(gamepad2.dpad_left) {//open claw
-                moveArmDown(500, 1.0);
+            if(gamepad2.dpad_right) {//Cone 2
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.01);
+                leftLinkage.setPosition(0.4);
+                rightLinkage.setPosition(0.4);
+                stop(0.4);
+                left4bar.setPosition(0.035);
+                right4bar.setPosition(0.035);
+                stop(0.7);
+                claw.setPosition(0.35);
+                stop(0.25);
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.25);
+                leftLinkage.setPosition(0);
+                rightLinkage.setPosition(0);
+                stop(0.8);
+                left4bar.setPosition(0.65);
+                right4bar.setPosition(0.65);
+                stop(0.3);
+                claw.setPosition(0);
+                stop(0.1);
+            }
+            if(gamepad2.dpad_up) {//Cone 1
+
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.01);
+                leftLinkage.setPosition(0.425);
+                rightLinkage.setPosition(0.425);
+                stop(0.4);
+                left4bar.setPosition(0.025);
+                right4bar.setPosition(0.025);
+                stop(0.7);
+                claw.setPosition(0.35);
+                stop(0.25);
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.25);
+                leftLinkage.setPosition(0);
+                rightLinkage.setPosition(0);
+                stop(0.8);
+                left4bar.setPosition(0.65);
+                right4bar.setPosition(0.65);
+                stop(0.3);
+                claw.setPosition(0);
+                stop(0.1);
             }
 
-            if(gamepad2.y) {
-                leftForebar.setPosition(0.4);
-                rightForebar.setPosition(0.4);
+            if(gamepad2.y) { //GIGA BUTTON
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.01);
+                leftLinkage.setPosition(0.34);
+                rightLinkage.setPosition(0.34);
+                stop(0.4);
+                left4bar.setPosition(0.14);
+                right4bar.setPosition(0.14);
+                stop(0.7);
+                claw.setPosition(0.35);
+                stop(0.25);
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.25);
+                leftLinkage.setPosition(0);
+                rightLinkage.setPosition(0);
+                stop(0.8);
+                left4bar.setPosition(0.7);
+                right4bar.setPosition(0.7);
+                stop(0.3);
+                claw.setPosition(0);
+                stop(0.25);
+
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.01);
+                leftLinkage.setPosition(0.34);
+                rightLinkage.setPosition(0.34);
+                stop(0.4);
+                left4bar.setPosition(0.12);
+                right4bar.setPosition(0.12);
+                stop(0.6);
+                claw.setPosition(0.35);
+                stop(0.25);
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.25);
+                leftLinkage.setPosition(0);
+                rightLinkage.setPosition(0);
+                stop(0.8);
+                left4bar.setPosition(0.7);
+                right4bar.setPosition(0.7);
+                stop(0.3);
+                claw.setPosition(0);
+                stop(0.25);
+
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.01);
+                leftLinkage.setPosition(0.34);
+                rightLinkage.setPosition(0.34);
+                stop(0.4);
+                left4bar.setPosition(0.09);
+                right4bar.setPosition(0.09);
+                stop(0.7);
+                claw.setPosition(0.35);
+                stop(0.25);
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.25);
+                leftLinkage.setPosition(0);
+                rightLinkage.setPosition(0);
+                stop(0.8);
+                left4bar.setPosition(0.7);
+                right4bar.setPosition(0.7);
+                stop(0.3);
+                claw.setPosition(0);
+                stop(0.25);
+
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.01);
+                leftLinkage.setPosition(0.38);
+                rightLinkage.setPosition(0.38);
+                stop(0.4);
+                left4bar.setPosition(0.04);
+                right4bar.setPosition(0.04);
+                stop(0.7);
+                claw.setPosition(0.35);
+                stop(0.25);
+                left4bar.setPosition(0.25);
+                right4bar.setPosition(0.25);
+                stop(0.1);
+                leftLinkage.setPosition(0);
+                rightLinkage.setPosition(0);
+                stop(0.8);
+                left4bar.setPosition(0.7);
+                right4bar.setPosition(0.7);
+                stop(0.5);
+                claw.setPosition(0);
+                stop(0.25);
+
+                left4bar.setPosition(0.45);
+                right4bar.setPosition(0.45);
+                stop(0.01);
+                leftLinkage.setPosition(0.38);
+                rightLinkage.setPosition(0.38);
+                stop(0.4);
+                left4bar.setPosition(0.02);
+                right4bar.setPosition(0.02);
+                stop(0.7);
+                claw.setPosition(0.35);
+                stop(0.25);
+                left4bar.setPosition(0.25);
+                right4bar.setPosition(0.25);
+                stop(0.1);
+                leftLinkage.setPosition(0);
+                rightLinkage.setPosition(0);
+                stop(0.8);
+                left4bar.setPosition(0.7);
+                right4bar.setPosition(0.7);
+                stop(0.5);
+                claw.setPosition(0);
+                stop(0.1);
             }
 
             if(gamepad2.b) {
-                leftForebar.setPosition(0.9);
-                rightForebar.setPosition(0.9);
+                leftLinkage.setPosition(0.40);
+                rightLinkage.setPosition(0.40);
             }
 
             if(gamepad1.y) {//open claw
-                leftLinkage.setPosition(0.3);
-                rightLinkage.setPosition(0.3);
-            }
-
-            else if(gamepad1.x) {//close claw
-                left4bar.setPosition(0.065);
-                right4bar.setPosition(0.065);
-            }
-
-            else if(gamepad1.a) {//close claw
-                left4bar.setPosition(0.025);
-                right4bar.setPosition(0.025);
-            }
-
-            if(gamepad1.b) {//O button
                 leftLinkage.setPosition(0);
                 rightLinkage.setPosition(0);
             }
 
-            if(gamepad1.dpad_up)  {
-                left4bar.setPosition(0.45);
-                right4bar.setPosition(0.45);
-            }
-            if(gamepad1.dpad_right)  {
-                leftLinkage.setPosition(0.15);
-                rightLinkage.setPosition(0.15);
-            }
-            if(gamepad1.dpad_down)  {
-                leftLinkage.setPosition(0.2);
-                rightLinkage.setPosition(0.2);
-            }
-            if(gamepad1.dpad_left)  {
+            else if(gamepad1.a) {//close claw
                 left4bar.setPosition(0.6);
                 right4bar.setPosition(0.6);
+            }
+
+            else if(gamepad1.x) {//close claw
+                left4bar.setPosition(0.165);
+                right4bar.setPosition(0.165);
+            }
+
+            if(gamepad1.b) {//O button
+                leftLinkage.setPosition(0.4);
+                rightLinkage.setPosition(0.4);
+            }
+
+            if(gamepad1.dpad_up)  {
+                left4bar.setPosition(0);
+                right4bar.setPosition(0);
+            }
+            if(gamepad1.dpad_right)  {
+                left4bar.setPosition(0.05);
+                right4bar.setPosition(0.05);
+            }
+            if(gamepad1.dpad_down)  {
+                left4bar.setPosition(0.1);
+                right4bar.setPosition(0.1);
+            }
+            if(gamepad1.dpad_left)  {
+                left4bar.setPosition(0.14);
+                right4bar.setPosition(0.14);
             }
             if(gamepad1.left_bumper) {
                 claw.setPosition(0);
             }
             if(gamepad1.right_bumper) {
-                claw.setPosition(0.25);
+                claw.setPosition(0.35);
             }
 
 /*
@@ -250,11 +477,9 @@ public class ServoZeroer extends LinearOpMode {
 
     }
 
-    public void stop(double time, double pos) {
+    public void stop(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run) {
-            left4bar.setPosition(pos);
-            right4bar.setPosition(pos-0.01);
         }
     }
     public void stop2(double time) {

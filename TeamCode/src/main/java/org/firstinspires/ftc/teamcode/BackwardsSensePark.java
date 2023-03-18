@@ -1,3 +1,4 @@
+//NO
 /*
  * Copyright (c) 2020 OpenFTC Team
  *
@@ -48,7 +49,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * the sample regions over the first 3 stones.
  */
 
-@Disabled
+//@Disabled
 @Autonomous
 public class BackwardsSensePark extends LinearOpMode {
 
@@ -64,6 +65,8 @@ public class BackwardsSensePark extends LinearOpMode {
     //Declare Regular Servos
     private Servo leftForebar;
     private Servo rightForebar;
+    private Servo rightLinkage;
+    private Servo leftLinkage;
 
     //The Time Object
     private ElapsedTime runtime = new ElapsedTime();
@@ -165,6 +168,8 @@ public class BackwardsSensePark extends LinearOpMode {
             //Initialize Regular Servos
             leftForebar = hardwareMap.servo.get("leftForebar");
             rightForebar = hardwareMap.servo.get("rightForebar");
+            leftLinkage =  hardwareMap.servo.get("leftLinkage");
+            rightLinkage = hardwareMap.servo. get("rightLinkage");
 
             //Initialize Drive Motors' Directions
             motorfrontLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -173,6 +178,8 @@ public class BackwardsSensePark extends LinearOpMode {
             motorbackRight.setDirection(DcMotor.Direction.FORWARD);
 
             //Initialize Servos' Directions
+            leftLinkage.setDirection(Servo.Direction.REVERSE);
+            rightLinkage.setDirection(Servo.Direction.FORWARD);
             leftForebar.setDirection(Servo.Direction.FORWARD);
             rightForebar.setDirection(Servo.Direction.REVERSE);
 
@@ -181,8 +188,10 @@ public class BackwardsSensePark extends LinearOpMode {
             telemetry.addData("Cr Value:", pipeline.getCr());
             telemetry.update();*/
 
+            leftLinkage.setPosition(0);
+            rightLinkage.setPosition(0);
 
-            moveBackward(1.5);
+            moveBackward(2);
 
             color = pipeline.getAnalysis();
 
@@ -197,7 +206,7 @@ public class BackwardsSensePark extends LinearOpMode {
             stop(0.5);
 
             if(color=="GREEN") {
-                strafeRight(3.3);
+                strafeRight(3.5);
                 turnLeft(0.2);
                 moveBackward(0.75);
                 stop(1.0);
@@ -206,7 +215,7 @@ public class BackwardsSensePark extends LinearOpMode {
                 moveBackward(0.9);
             }
             else if(color=="ORANGE") {
-                strafeLeft(3.3);
+                strafeLeft(3.5);
                 moveBackward(0.65);
                 stop(1.0);
             }

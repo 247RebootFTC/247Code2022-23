@@ -1,3 +1,5 @@
+//Test Servo Positions
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -77,8 +79,8 @@ public class LinkageTest extends LinearOpMode {
         leftLinkage.setDirection(Servo.Direction.REVERSE);
         rightLinkage.setDirection(Servo.Direction.FORWARD);
 
-        leftForebar.setDirection(Servo.Direction.FORWARD);
-        rightForebar.setDirection(Servo.Direction.REVERSE);
+        leftForebar.setDirection(Direction.REVERSE);
+        rightForebar.setDirection(Direction.FORWARD);
 
         left4bar.setDirection(Servo.Direction.REVERSE);
         right4bar.setDirection(Servo.Direction.FORWARD);
@@ -92,20 +94,28 @@ public class LinkageTest extends LinearOpMode {
         //All motors are backwards except ones that are used
         while (opModeIsActive()) {
             if(gamepad1.a) {
-                leftForebar.setPosition(0.4);
-                rightForebar.setPosition(0.4 + 0.075);
+                leftForebar.setPosition(0.3);
+                rightForebar.setPosition(0.3);
             }
             else if(gamepad1.y) {
-                leftForebar.setPosition(0.5);
-                rightForebar.setPosition(0.5 + 0.075);
+                leftForebar.setPosition(0.8);
+                rightForebar.setPosition(0.8);
             }
             else if(gamepad1.b) {
-                leftForebar.setPosition(0.45);
-                rightForebar.setPosition(0.45 + 0.075);
+                leftForebar.setPosition(0.5);
+                rightForebar.setPosition(0.5);
+            }
+            else if(gamepad1.x) {
+                leftForebar.setPosition(0);
+                rightForebar.setPosition(0);
             }
 
-            if(gamepad1.x) {
+            if(gamepad1.right_bumper) {
                 intake.setPower(-1.0);
+            }
+
+            if(gamepad1.left_bumper) {
+                intake.setPower(1.0);
             }
 
 

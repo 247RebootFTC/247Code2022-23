@@ -1,10 +1,8 @@
-//NO
-
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,7 +10,10 @@ import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.Servo.Direction;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -25,34 +26,41 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import java.util.concurrent.atomic.AtomicReference;
 
 /*
  * This is an example of a more complex path to really test the tuning.
  */
-@TeleOp
-public class ConeStackPickerUpper extends LinearOpMode {
+@Autonomous(group = "right")
+public class funnyPAathH extends LinearOpMode {
 
     //Value of slides at high junction (use ArmReader)
-    double SLIDES_HIGH = 2500;
+    double SLIDES_HIGH = 2425;
+
+    double SLIDES_MID = 1500;
+
+    double SLIDES_LOW = 1000;
 
     //Value of slides at intake height (use ArmReader)
-    double SLIDES_INTAKE = 300;
+    double SLIDES_INTAKE = 400;
 
-    double SLIDES_HOLD = SLIDES_INTAKE + 150;
+    double SLIDES_HOLD = SLIDES_INTAKE + 1275;
 
     //Value of forebar at intake position (use ServoZeroer and trial and error the values)
-    double FOREBAR_INTAKE = 0.8;
+    double FOREBAR_INTAKE = 0.05;
 
     //Value of forebar at outtake position (use ServoZeroer and trial and error the values)
-    double FOREBAR_OUTTAKE = 0.3;
+    double FOREBAR_OUTTAKE = 0.75;
+
+    double STUPID_FOREBAR_OUTTAKE = 0.74;
 
     //Value of clawbar at cone grabbing position (use LinkageTest to find trial and error the values)
-    double CLAWBAR_GRAB_POS = 0.72;
+    double CLAWBAR_GRAB_POS = 0.0;
 
-    double LINKAGE_OUT_POS = 0.28;
+    double CLAWBAR_BACK_POS = 0.79;
 
-    double LINKAGE_UP_POS = 0.36;
+    //MAX POS = 0.4
+    double LINKAGE_OUT_POS = 0.17;
 
     //Declare Mechanism Motors
     private DcMotor leftSlide;
@@ -73,6 +81,8 @@ public class ConeStackPickerUpper extends LinearOpMode {
     private Servo left4bar;
     private Servo right4bar;
     private Servo claw;
+
+    String color;
 
     //Time Variable
     private ElapsedTime runtime = new ElapsedTime();
@@ -109,14 +119,14 @@ public class ConeStackPickerUpper extends LinearOpMode {
         rightSlide.setDirection(DcMotor.Direction.REVERSE);
 
         //Initialize Servos' Directions
-        leftLinkage.setDirection(Servo.Direction.REVERSE);
-        rightLinkage.setDirection(Servo.Direction.FORWARD);
+        leftLinkage.setDirection(Direction.REVERSE);
+        rightLinkage.setDirection(Direction.FORWARD);
 
-        leftForebar.setDirection(Servo.Direction.FORWARD);
-        rightForebar.setDirection(Servo.Direction.REVERSE);
+        leftForebar.setDirection(Direction.REVERSE);
+        rightForebar.setDirection(Direction.FORWARD);
 
-        left4bar.setDirection(Servo.Direction.REVERSE);
-        right4bar.setDirection(Servo.Direction.FORWARD);
+        left4bar.setDirection(Direction.REVERSE);
+        right4bar.setDirection(Direction.FORWARD);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -157,11 +167,309 @@ public class ConeStackPickerUpper extends LinearOpMode {
             }
         });
 
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        while(opModeIsActive()) {
-            if(gamepad1.a) {
-                triumvirate(0.34);
+        telemetry.addData(">", "DRAGON: FIIIIIIIIIIRE");
+        telemetry.update();
+
+        color = pipeline.getAnalysis();
+
+        waitForStart();
+
+        //AtomicReference<String> color = new AtomicReference<>("bruh");
+
+        //if (isStopRequested()) return;
+
+        if(opModeIsActive()) {
+
+            /*moveArmDown(SLIDES_INTAKE, 1.0);
+
+            intake(0.01);
+            leftForebar.setPosition(0.3);
+            rightForebar.setPosition(0.3);*/
+
+            color = pipeline.getAnalysis();
+
+            telemetry.addData("Analysis", color);
+            telemetry.update();
+
+            color = pipeline.getAnalysis();
+            color = pipeline.getAnalysis();
+            color = pipeline.getAnalysis();
+            color = pipeline.getAnalysis();
+            color = pipeline.getAnalysis();
+            color = pipeline.getAnalysis();
+            color = pipeline.getAnalysis();
+            //pls
+
+            stop(0.25);
+
+            left4bar.setPosition(0);
+            right4bar.setPosition(0);
+            leftLinkage.setPosition(0);
+            rightLinkage.setPosition(0);
+            leftForebar.setPosition(0.45);
+            rightForebar.setPosition(0.45);
+
+            stop(0.5);
+
+            Pose2d startPose = new Pose2d(35.5, -58.5, Math.toRadians(-90));
+
+            drive.setPoseEstimate(startPose);
+
+            TrajectorySequence seq1 = drive.trajectorySequenceBuilder(new Pose2d(35.5, -58.5, Math.toRadians(-90)))
+                    .back(48)
+                    .addTemporalMarker(0.5, () -> {
+
+                        /*intake(0.0001);
+                        leftForebar.setPosition(0.05);
+                        rightForebar.setPosition(0.05);*/
+
+                    })
+
+                    .addTemporalMarker(1.75, () -> {
+
+                        left4bar.setPosition(0.25);
+                        right4bar.setPosition(0.25);
+
+                    })
+                    .splineToSplineHeading(new Pose2d(31, 1.5, Math.toRadians(170)), Math.toRadians(-180))
+                    .build();
+
+            TrajectorySequence seq2 = drive.trajectorySequenceBuilder(seq1.end())
+
+                        //1+5 HOLY MOLY
+                        /*stupidCycle(0.14, 0.34);
+                        stupidCycle(0.12, 0.34);
+                        stupidCycle(0.09, 0.34);*/
+                    .waitSeconds(2.5)
+                    .setReversed(true)
+                    .splineToSplineHeading(new Pose2d(35.5,-9.5, Math.toRadians(90)), Math.toRadians(-90))
+                    //.strafeLeft(24) ZONE 3
+                    //.strafeRight(24) ZONE 1
+                    .build();
+
+            Trajectory park1= drive.trajectoryBuilder(seq2.end())
+                    .strafeLeft(24)
+                    .build();
+
+            Trajectory park2= drive.trajectoryBuilder(seq2.end())
+                    .back(24)
+                    .build();
+
+            Trajectory park3= drive.trajectoryBuilder(seq2.end())
+                    .strafeRight(24)
+                    .build();
+
+            drive.followTrajectorySequence(seq1);
+
+            moveArmUp(SLIDES_INTAKE, 1.0);
+            intake(0.1);
+            left4bar.setPosition(0.45);
+            right4bar.setPosition(0.45);
+            claw.setPosition(0);
+            stop(0.01);
+            leftLinkage.setPosition(0.34);
+            rightLinkage.setPosition(0.34);
+            forebarIPos(0.75);
+            stop(0.5);
+            moveArmDown(SLIDES_INTAKE, 1.0);
+            moveArmUp(SLIDES_HIGH, 1.0);
+            holdArm();
+            left4bar.setPosition(0.14);
+            right4bar.setPosition(0.14);
+            forebarOPos(1.4);
+            outtake(0.15);
+            stopIntake(0.01);
+            forebarIPos(0.01);
+            moveArmDown(SLIDES_HOLD+100, 1.0);
+
+            /*left4bar.setPosition(0.45);
+            right4bar.setPosition(0.45);
+            stop(0.01);
+            leftLinkage.setPosition(0.34);
+            rightLinkage.setPosition(0.34);
+            stop(0.4);
+            left4bar.setPosition(0.14);
+            right4bar.setPosition(0.14);
+            stop(0.7);*/
+            claw.setPosition(0.35);
+            stop(0.25);
+            left4bar.setPosition(0.45);
+            right4bar.setPosition(0.45);
+            stop(0.25);
+            leftLinkage.setPosition(0);
+            rightLinkage.setPosition(0);
+            stop(0.8);
+            left4bar.setPosition(0.7);
+            right4bar.setPosition(0.7);
+            stop(0.3);
+            claw.setPosition(0);
+            stop(0.25);
+
+            moveArmUp(SLIDES_HOLD, 1.0);
+            intake(0.1);
+            forebarIPos(0.75);
+            stop(0.5);
+            moveArmDown(SLIDES_INTAKE, 1.0);
+            moveArmUp(SLIDES_HIGH, 1.0);
+            holdArm();
+            forebarOPos(1.4);
+            outtake(0.15);
+            stopIntake(0.01);
+            forebarIPos(0.01);
+            moveArmDown(SLIDES_HOLD+100, 1.0);
+/*
+            left4bar.setPosition(0.45);
+            right4bar.setPosition(0.45);
+            stop(0.01);
+            leftLinkage.setPosition(0.34);
+            rightLinkage.setPosition(0.34);
+            stop(0.4);
+            left4bar.setPosition(0.12);
+            right4bar.setPosition(0.12);
+            stop(0.6);
+            claw.setPosition(0.35);
+            stop(0.25);
+            left4bar.setPosition(0.45);
+            right4bar.setPosition(0.45);
+            stop(0.25);
+            leftLinkage.setPosition(0);
+            rightLinkage.setPosition(0);
+            stop(0.8);
+            left4bar.setPosition(0.7);
+            right4bar.setPosition(0.7);
+            stop(0.3);
+            claw.setPosition(0);
+            stop(0.25);
+
+            intake(0.1);
+            moveArmDown(SLIDES_INTAKE, 1.0);
+            moveArmUp(SLIDES_HIGH, 1.0);
+            holdArm();
+            forebarOPos(1.4);
+            outtake(0.15);
+            stopIntake(0.01);
+            forebarIPos(0.01);
+            moveArmDown(SLIDES_HOLD+100, 1.0);
+
+            left4bar.setPosition(0.45);
+            right4bar.setPosition(0.45);
+            stop(0.01);
+            leftLinkage.setPosition(0.34);
+            rightLinkage.setPosition(0.34);
+            stop(0.4);
+            left4bar.setPosition(0.09);
+            right4bar.setPosition(0.09);
+            stop(0.7);
+            claw.setPosition(0.35);
+            stop(0.25);
+            left4bar.setPosition(0.45);
+            right4bar.setPosition(0.45);
+            stop(0.25);
+            leftLinkage.setPosition(0);
+            rightLinkage.setPosition(0);
+            stop(0.8);
+            left4bar.setPosition(0.7);
+            right4bar.setPosition(0.7);
+            stop(0.3);
+            claw.setPosition(0);
+            stop(0.25);
+
+            intake(0.1);
+            moveArmDown(SLIDES_INTAKE, 1.0);
+            moveArmUp(SLIDES_HIGH, 1.0);
+            holdArm();
+            forebarOPos(1.4);
+            outtake(0.15);
+            stopIntake(0.01);
+            forebarIPos(0.01);
+            moveArmDown(SLIDES_HOLD+100, 1.0);
+
+            left4bar.setPosition(0.45);
+            right4bar.setPosition(0.45);
+            stop(0.01);
+            leftLinkage.setPosition(0.38);
+            rightLinkage.setPosition(0.38);
+            stop(0.4);
+            left4bar.setPosition(0.04);
+            right4bar.setPosition(0.04);
+            stop(0.7);
+            claw.setPosition(0.35);
+            stop(0.25);
+            left4bar.setPosition(0.25);
+            right4bar.setPosition(0.25);
+            stop(0.1);
+            leftLinkage.setPosition(0);
+            rightLinkage.setPosition(0);
+            stop(0.8);
+            left4bar.setPosition(0.7);
+            right4bar.setPosition(0.7);
+            stop(0.5);
+            claw.setPosition(0);
+            stop(0.25);
+
+            intake(0.1);
+            moveArmDown(SLIDES_INTAKE, 1.0);
+            moveArmUp(SLIDES_HIGH, 1.0);
+            holdArm();
+            forebarOPos(1.4);
+            outtake(0.15);
+            stopIntake(0.01);
+            forebarIPos(0.01);
+            moveArmDown(SLIDES_HOLD+100, 1.0);
+
+            left4bar.setPosition(0.45);
+            right4bar.setPosition(0.45);
+            stop(0.01);
+            leftLinkage.setPosition(0.38);
+            rightLinkage.setPosition(0.38);
+            stop(0.4);
+            left4bar.setPosition(0.02);
+            right4bar.setPosition(0.02);
+            stop(0.7);
+            claw.setPosition(0.35);
+            stop(0.25);
+            left4bar.setPosition(0.25);
+            right4bar.setPosition(0.25);
+            stop(0.1);
+            leftLinkage.setPosition(0);
+            rightLinkage.setPosition(0);
+            stop(0.8);
+            left4bar.setPosition(0.7);
+            right4bar.setPosition(0.7);
+            stop(0.5);
+            claw.setPosition(0);
+            stop(0.1);
+
+            intake(0.1);
+            moveArmDown(SLIDES_INTAKE, 1.0);
+            moveArmUp(SLIDES_HIGH, 1.0);
+            holdArm();
+            forebarOPos(1.4);
+            outtake(0.15);
+            stopIntake(0.01);
+            forebarIPos(0.01);
+            moveArmDown(SLIDES_HOLD+100, 1.0);*/
+
+            drive.followTrajectorySequence(seq2);
+
+            if (color == "GREEN") {
+
+                drive.followTrajectory(park1);
+
             }
+            else if (color == "PURPLE") {
+
+                drive.followTrajectory(park2);
+
+            }
+            else if (color == "ORANGE") {
+
+                drive.followTrajectory(park3);
+
+            }
+
         }
 
     }
@@ -185,8 +493,8 @@ public class ConeStackPickerUpper extends LinearOpMode {
     public void move4bar(double pos, double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            left4bar.setPosition(pos-0.025);
-            right4bar.setPosition(pos);;
+            left4bar.setPosition(pos);
+            right4bar.setPosition(pos);
         }
     }
 
@@ -198,19 +506,19 @@ public class ConeStackPickerUpper extends LinearOpMode {
         }
     }
 
-    public void forebarHold(double time) {
-        double run = (runtime.time()+time);
-        while(runtime.time() < run){
-            leftForebar.setPosition(.7);
-            rightForebar.setPosition(.675);
-        }
-    }
-
     public void forebarOPos(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            leftForebar.setPosition(FOREBAR_OUTTAKE+0.025);
+            leftForebar.setPosition(FOREBAR_OUTTAKE);
             rightForebar.setPosition(FOREBAR_OUTTAKE);
+        }
+    }
+
+    public void stupidForebarOPos(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftForebar.setPosition(STUPID_FOREBAR_OUTTAKE);
+            rightForebar.setPosition(STUPID_FOREBAR_OUTTAKE);
         }
     }
 
@@ -224,13 +532,13 @@ public class ConeStackPickerUpper extends LinearOpMode {
     public void clawClose(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            claw.setPosition(0.25);
+            claw.setPosition(0.60);
         }
     }
 
     public void liftOdo(double time) {
         double run = (runtime.time()+time);
-        while(runtime.time() < run){
+        while(runtime.time() < run) {
             leftOdo.setPower(-1.0);
             rightOdo.setPower(-0.6);
             frontOdo.setPower(-1.0);
@@ -315,45 +623,50 @@ public class ConeStackPickerUpper extends LinearOpMode {
         rightSlide.setPower(0.1);
     }
 
-    public void startCycle(){
-        forebarIPos(0.1);
-        moveArmUp(SLIDES_HOLD, 0.5);
-        holdArm();
-        clawOpen(0.2);
-        linkageOut(LINKAGE_OUT_POS-0.1, 0.2);
-        move4bar(CLAWBAR_GRAB_POS, 0.5);
-        linkageOut(LINKAGE_OUT_POS, 0.5);
-        clawClose(0.1);
-        move4bar(0, 0.5);
-        linkageIn(0.35);
+    public void end(double clawbar, double linkage) {
+
     }
 
-    public void triumvirate(double fourbarPos) {
-        //Intake
-        forebarIPos(0.0000001);
+    /*public void stupidCycle(double clawbar, double linkage) {
         intake(0.1);
-        moveArmDown(SLIDES_INTAKE, 1.0);
-        holdSlides(0.5);
+
+        moveArmUp(SLIDES_HIGH, 1.0);
+        holdArm();
+
+        //Linkage prepares to grab
+        move4bar(0.45, 0.01);
+        linkageOut(linkage, 0.4);
+        move4bar(clawbar, 0.01);
+
+        //Pull in cone and drop cone
+        forebarOPos(1.4);
+
+
+        outtake(0.4);
+        linkageOut(linkage, 0.4);
+        stopIntake(0.01);
+        forebarIPos(1.0);
+        clawClose(0.25);
+
+
+        move4bar(0.45, 0.25);
+        linkageIn(0.5);
+        move4bar(CLAWBAR_BACK_POS, 0.5);
+        moveArmDown(SLIDES_HOLD, 1.0);
         clawOpen(0.01);
 
-        //Slides go high + outtake
-        moveArmUp(SLIDES_HIGH, 1.0);
-        forebarOPos(1.0);
-        outtake(0.5);
-        stopIntake(0.01);
+        intake(1.0);
+        moveArmDown(SLIDES_INTAKE, 1.0);
 
-        //move odo
+    }*/
 
-        //Pick up cone
-        forebarIPos(0.01);
-        move4bar(fourbarPos, 0.01);
-        linkageOut(LINKAGE_OUT_POS, 0.5);
-        clawClose(0.2);
-        linkageOut(LINKAGE_UP_POS, 0.05);
-        move4bar(fourbarPos-0.24, 0.000001);
-        startArmDown(0.3);
-        move4bar(0, 0.01);
-        linkageIn(0.01);
+    public void cycle(double fourbarPos) {
+        //Intake
+        linkageOut(0.215, 0.001);
+        move4bar(0.37, 0.5);
+        clawClose(0.1);
+        linkageOut(0.36, 0.05);
+        move4bar(0.10, 0.01);
     }
 
     public void initEncoder() {
@@ -361,14 +674,14 @@ public class ConeStackPickerUpper extends LinearOpMode {
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
 
-        leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftSlide.setMode(RunMode.RUN_USING_ENCODER);
+        rightSlide.setMode(RunMode.RUN_USING_ENCODER);
 
-        leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlide.setMode(RunMode.STOP_AND_RESET_ENCODER);
+        rightSlide.setMode(RunMode.STOP_AND_RESET_ENCODER);
 
-        leftSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftSlide.setMode(RunMode.RUN_WITHOUT_ENCODER);
+        rightSlide.setMode(RunMode.RUN_WITHOUT_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
         /*telemetry.addData("Path0",  "Starting at %7d :%7d :%7d :%7d",
@@ -610,6 +923,12 @@ public class ConeStackPickerUpper extends LinearOpMode {
         public int getCb()
         {
             return Cb_val;
+        }
+    }
+
+    public void stop(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run) {
         }
     }
 

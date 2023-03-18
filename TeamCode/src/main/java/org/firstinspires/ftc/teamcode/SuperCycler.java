@@ -1,3 +1,5 @@
+//MULTIPLE THINGS TO SAVE :)
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -23,27 +25,32 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 public class SuperCycler extends LinearOpMode {
 
     //Value of slides at high junction (use ArmReader)
-    double SLIDES_HIGH = 2200;
+    double SLIDES_HIGH = 2500;
 
     double SLIDES_MID = 1500;
 
     double SLIDES_LOW = 1000;
 
     //Value of slides at intake height (use ArmReader)
-    double SLIDES_INTAKE = 325;
+    double SLIDES_INTAKE = 400;
 
-    double SLIDES_HOLD = SLIDES_INTAKE + 250;
+    double SLIDES_HOLD = SLIDES_INTAKE + 1175;
 
     //Value of forebar at intake position (use ServoZeroer and trial and error the values)
-    double FOREBAR_INTAKE = 1.0;
+    double FOREBAR_INTAKE = 0.065;
 
     //Value of forebar at outtake position (use ServoZeroer and trial and error the values)
-    double FOREBAR_OUTTAKE = 0.4;
+    double FOREBAR_OUTTAKE = 0.68;
+
+    double STUPID_FOREBAR_OUTTAKE = 0.74;
 
     //Value of clawbar at cone grabbing position (use LinkageTest to find trial and error the values)
-    double CLAWBAR_GRAB_POS = 0.05;
+    double CLAWBAR_GRAB_POS = 0.0;
 
-    double LINKAGE_OUT_POS = 0.21;
+    double CLAWBAR_BACK_POS = 0.79;
+
+    //MAX POS = 0.4
+    double LINKAGE_OUT_POS = 0.17;
 
     int beginning = 0;
 
@@ -53,12 +60,15 @@ public class SuperCycler extends LinearOpMode {
     double pos = 0;
 
     //double forebarPos;
-    boolean forebarIntake = true;
+    boolean forebarIntake = false;
     double clawPos = 0.0;
     double fourbarPos = 0;
     double linkagePos = 0;
     boolean claw4bar = false;
     double linkagePosition = 0;
+
+    boolean inCycle = false;
+    boolean coneInWay = false;
 
 
     //declare Drive Motors
@@ -163,8 +173,8 @@ public class SuperCycler extends LinearOpMode {
         leftLinkage.setDirection(Servo.Direction.REVERSE);
         rightLinkage.setDirection(Servo.Direction.FORWARD);
 
-        leftForebar.setDirection(Servo.Direction.FORWARD);
-        rightForebar.setDirection(Servo.Direction.REVERSE);
+        leftForebar.setDirection(Servo.Direction.REVERSE);
+        rightForebar.setDirection(Servo.Direction.FORWARD);
 
         left4bar.setDirection(Servo.Direction.REVERSE);
         right4bar.setDirection(Servo.Direction.FORWARD);
@@ -216,10 +226,10 @@ public class SuperCycler extends LinearOpMode {
             RB += X2;
 
             //Turning
-            LF += X1;
-            RF -= X1;
-            LB += X1;
-            RB -= X1;
+            LF -= X1;
+            RF += X1;
+            LB -= X1;
+            RB += X1;
 
 
             //Set Motors
@@ -234,11 +244,20 @@ public class SuperCycler extends LinearOpMode {
                 stopOdo(0.1);
             }
 
+            if(gamepad1.b) {
+                coneInWay = !coneInWay;
+            }
+
             if (gamepad2.y) {
                 startCycle();
             }
             else if (gamepad2.b) {
-                triumvirate();
+                if(coneInWay==false) {
+                    triumvirate();
+                }
+                else {
+                    stupidConeCycle();
+                }
             }
 
             if (gamepad1.a) {
@@ -251,7 +270,8 @@ public class SuperCycler extends LinearOpMode {
                 else if(claw4bar) {
                     clawClose(0.1);
                     linkageIn(0.1);
-                    move4bar(0, 0.1);
+                    move4bar(0.7, 0.6);
+                    clawOpen(0.1);
                     claw4bar = false;
                 }
             }
@@ -353,7 +373,7 @@ public class SuperCycler extends LinearOpMode {
                 holdUp = false;
                 moveUp = false;
                 moveDown = false;
-                pos = SLIDES_HIGH+100;
+                pos = SLIDES_HIGH + 100;
                 clawOpen(0.01);
                 moveArm();
             }
@@ -442,9 +462,9 @@ public class SuperCycler extends LinearOpMode {
     public void linkageIn(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            leftLinkage.setPosition(0);
-            rightLinkage.setPosition(0);
-            linkagePosition = 0;
+            leftLinkage.setPosition(0.05);
+            rightLinkage.setPosition(0.05);
+            linkagePosition = 0.05;
         }
     }
 
@@ -469,7 +489,7 @@ public class SuperCycler extends LinearOpMode {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
             leftForebar.setPosition(FOREBAR_INTAKE);
-            rightForebar.setPosition(FOREBAR_INTAKE + 0.065);
+            rightForebar.setPosition(FOREBAR_INTAKE);
         }
         forebarIntake = true;
     }
@@ -478,7 +498,16 @@ public class SuperCycler extends LinearOpMode {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
             leftForebar.setPosition(FOREBAR_OUTTAKE);
-            rightForebar.setPosition(FOREBAR_OUTTAKE + 0.065);
+            rightForebar.setPosition(FOREBAR_OUTTAKE);
+        }
+        forebarIntake = false;
+    }
+
+    public void stupidForebarOPos(double time) {
+        double run = (runtime.time()+time);
+        while(runtime.time() < run){
+            leftForebar.setPosition(STUPID_FOREBAR_OUTTAKE);
+            rightForebar.setPosition(STUPID_FOREBAR_OUTTAKE);
         }
         forebarIntake = false;
     }
@@ -493,7 +522,7 @@ public class SuperCycler extends LinearOpMode {
     public void clawClose(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
-            claw.setPosition(0.25);
+            claw.setPosition(0.60);
         }
     }
 
@@ -557,6 +586,11 @@ public class SuperCycler extends LinearOpMode {
         rightSlide.setPower(-speed);
     }
 
+    public void startArmUp(double speed) {
+        leftSlide.setPower(speed);
+        rightSlide.setPower(speed);
+    }
+
     public void holdSlides(double time) {
         double run = (runtime.time()+time);
         while(runtime.time() < run){
@@ -579,36 +613,45 @@ public class SuperCycler extends LinearOpMode {
         rightSlide.setPower(0.1);
     }
 
-    public void startCycle(){
+    public void startCycle() {
+        inCycle = true;
+
         moveArmUp(SLIDES_HOLD, 1.0);
         holdUp = true;
-        forebarIPos(0.5);
-        clawOpen(0.2);
-        linkageOut(LINKAGE_OUT_POS, 0.2);
-        move4bar(CLAWBAR_GRAB_POS, 0.5);
-        linkageOut(LINKAGE_OUT_POS, 0.5);
-        linkageOut(LINKAGE_OUT_POS+0.2, 0.2);
+        forebarIPos(0.1);
+        clawOpen(0.01);
+        move4bar(0.45, 1.0);
+        linkageOut(LINKAGE_OUT_POS, 1.0);
+        move4bar(CLAWBAR_GRAB_POS, 1.0);
+        linkageOut(LINKAGE_OUT_POS+0.15, 0.4);
         clawClose(0.25);
-        move4bar(0, 0.5);
-        linkageIn(0.35);
-        clawOpen(0.1);
+        move4bar(0.45, .2);
+        linkageIn(0.75);
+        move4bar(CLAWBAR_BACK_POS, 0.5);
+        clawOpen(0.75);
+
+        inCycle = false;
     }
 
     public void triumvirate() {
-        //Linkage prepares to grab
-        linkageOut(LINKAGE_OUT_POS, 0.2);
-        move4bar(CLAWBAR_GRAB_POS, 0.2);
+        inCycle = true;
 
         intake(0.1);
         holdUp = false;
         moveArmDown(SLIDES_INTAKE, 1.0);
-        holdSlides(0.25);
-        //Slides go high
+
         moveArmUp(SLIDES_HIGH, 1.0);
+        holdArm();
+
+        //Linkage prepares to grab
+        move4bar(CLAWBAR_GRAB_POS, 0.01);
+        linkageOut(LINKAGE_OUT_POS, 0.01);
+
+
 
 
         //Pull in cone and drop cone
-        forebarOPos(1.0);
+        forebarOPos(1.4);
 
         /*while(!gamepad2.right_bumper) {
             if (gamepad1.left_stick_y < 0) {
@@ -646,17 +689,99 @@ public class SuperCycler extends LinearOpMode {
             }
         }*/
 
-        outtake(0.5);
+        outtake(0.15);
+        linkageOut(LINKAGE_OUT_POS+0.15, 0.4);
         stopIntake(0.01);
         forebarIPos(0.01);
-        linkageOut(LINKAGE_OUT_POS, 0.5);
-        linkageOut(LINKAGE_OUT_POS+0.2, 0.2);
-        clawClose(0.2);
-        startArmDown(0.1);
-        move4bar(0, 0.5);
-        linkageIn(0.01);
-        intake(0.25);
-        moveArmDown(SLIDES_INTAKE, 0.5);
+        clawClose(0.25);
+
+        //startArmDown(0.1);
+
+        move4bar(0.25, 0.2);
+        linkageIn(0.5);
+        move4bar(CLAWBAR_BACK_POS, 0.5);
+        holdUp = false;
+        moveArmDown(SLIDES_HOLD, 1.0);
+        holdUp = true;
+        clawOpen(0.01);
+
+        inCycle = false;
+    }
+
+    public void stupidConeCycle() {
+        inCycle = true;
+
+        intake(0.1);
+        holdUp = false;
+        moveArmDown(SLIDES_INTAKE, 1.0);
+
+        moveArmUp(SLIDES_HIGH, 1.0);
+        holdArm();
+
+        //Linkage prepares to grab
+        move4bar(CLAWBAR_GRAB_POS, 0.01);
+        linkageOut(LINKAGE_OUT_POS, 0.01);
+
+
+
+
+        //Pull in cone and drop cone
+        stupidForebarOPos(1.4);
+
+        /*while(!gamepad2.right_bumper) {
+            if (gamepad1.left_stick_y < 0) {
+                motorfrontLeft.setPower(0.1);
+                motorfrontRight.setPower(0.1);
+                motorbackLeft.setPower(0.1);
+                motorbackRight.setPower(0.1);
+            }
+            //Move back
+            else if (gamepad1.left_stick_y > 0) {
+                motorfrontLeft.setPower(-0.1);
+                motorfrontRight.setPower(-0.1);
+                motorbackLeft.setPower(-0.1);
+                motorbackRight.setPower(-0.1);
+            }
+            //Strafe right
+            else if (gamepad1.dpad_right) {
+                motorfrontLeft.setPower(-0.3);
+                motorfrontRight.setPower(0.3);
+                motorbackLeft.setPower(0.3);
+                motorbackRight.setPower(-0.3);
+            }
+            //Strafe left
+            else if (gamepad1.dpad_left) {
+                motorfrontLeft.setPower(0.3);
+                motorfrontRight.setPower(-0.3);
+                motorbackLeft.setPower(-0.3);
+                motorbackRight.setPower(0.3);
+            }
+            else {
+                motorfrontLeft.setPower(0);
+                motorfrontRight.setPower(0);
+                motorbackLeft.setPower(0);
+                motorbackRight.setPower(0);
+            }
+        }*/
+
+        outtake(0.15);
+        linkageOut(LINKAGE_OUT_POS+0.15, 0.4);
+        stopIntake(0.01);
+        forebarIPos(0.01);
+        clawClose(0.25);
+
+        /*holdUp = false;
+        startArmDown(0.1);*/
+
+        move4bar(0.25, 0.2);
+        linkageIn(0.5);
+        move4bar(CLAWBAR_BACK_POS, 0.5);
+        holdUp = false;
+        moveArmDown(SLIDES_HOLD, 1.0);
+        holdUp = true;
+        clawOpen(0.01);
+
+        inCycle = false;
     }
 
     public void moveArm() {

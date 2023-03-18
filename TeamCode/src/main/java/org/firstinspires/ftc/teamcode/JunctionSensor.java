@@ -1,3 +1,5 @@
+//NO
+
 /*
  * Copyright (c) 2020 OpenFTC Team
  *
@@ -41,7 +43,6 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-
 
 /*
  * This sample demonstrates a basic (but battle-tested and essentially
