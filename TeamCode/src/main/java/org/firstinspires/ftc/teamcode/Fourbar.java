@@ -92,9 +92,6 @@ public class Fourbar extends LinearOpMode {
         if (opModeIsActive()) {
             leftLinkage.setPosition(0);
             rightLinkage.setPosition(0);
-
-
         }
-
     }
 }

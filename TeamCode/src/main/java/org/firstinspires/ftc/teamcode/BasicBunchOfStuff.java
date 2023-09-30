@@ -1,5 +1,3 @@
-//MULTIPLE THINGS TO SAVE :)
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -22,7 +20,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 //@Disabled
 @TeleOp
-public class SuperCycler extends LinearOpMode {
+public class BasicBunchOfStuff extends LinearOpMode {
 
     //Value of slides at high junction (use ArmReader)
     double SLIDES_HIGH = 2500;
